@@ -1,31 +1,39 @@
-import React from 'react'
-import { DataQuery } from '@dhis2/app-runtime'
-import i18n from '@dhis2/d2-i18n'
-import classes from './App.module.css'
+import { Box } from "@chakra-ui/react";
+import { useStore } from "effector-react";
+import {
+  Link,
+  MakeGenerics,
+  Outlet,
+  ReactLocation,
+  Router,
+  useMatch,
+} from "react-location";
+import GATApp from "./GATApp";
+import ActivityForm from "./components/ActivityForm";
+import { useLoader } from "./models/Queries";
+import { $store } from "./models/Store";
 
-const query = {
-    me: {
-        resource: 'me',
-    },
-}
+const location = new ReactLocation();
 
-const MyApp = () => (
-    <div className={classes.container}>
-        <DataQuery query={query}>
-            {({ error, loading, data }) => {
-                if (error) return <span>ERROR</span>
-                if (loading) return <span>...</span>
-                return (
-                    <>
-                        <h1>
-                            {i18n.t('Hello {{name}}', { name: data.me.name })}
-                        </h1>
-                        <h3>{i18n.t('Welcome to DHIS2!')}</h3>
-                    </>
-                )
-            }}
-        </DataQuery>
-    </div>
-)
+const MyApp = () => {
+  const store = useStore($store);
+  const { isLoading, isSuccess, isError, error } = useLoader(
+    store.selectedProgram
+  );
+  return (
+    <>
+      {isLoading && <Box>Loading ...</Box>}
+      {isSuccess && (
+        <Router
+          location={location}
+          routes={[{ path: "/", element: <GATApp /> }]}
+        >
+          <Outlet />
+        </Router>
+      )}
+      {isError && <Box>{error.message}</Box>}
+    </>
+  );
+};
 
-export default MyApp
+export default MyApp;

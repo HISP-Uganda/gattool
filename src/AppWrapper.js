@@ -1,8 +1,7 @@
 import { ChakraProvider } from "@chakra-ui/react";
 import React from "react";
 import { QueryClientProvider, QueryClient } from "react-query";
-import GATApp from './GATApp'
-import "./index.css";
+import App from "./App";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -16,9 +15,9 @@ const queryClient = new QueryClient({
 const AppWrapper = () => {
   return (
     <QueryClientProvider client={queryClient}>
-        <ChakraProvider>
-          <GATApp />
-        </ChakraProvider>
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
     </QueryClientProvider>
   );
 };
