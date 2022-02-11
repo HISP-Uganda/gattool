@@ -18,7 +18,7 @@ import {
 } from "@chakra-ui/react";
 import Search16 from "@dhis2/ui-icons/build/cjs/react/Search16";
 import { useStore } from "effector-react";
-import { Link } from "react-location";
+import { useNavigate } from "react-location";
 import ActivityForm from "./components/ActivityForm";
 import OrgUnitTree from "./components/OrgUnitTree";
 import { useTracker } from "./models/Queries";
@@ -79,6 +79,7 @@ const columns = [
 
 const GATApp = () => {
   const store = useStore($store);
+  const navigate = useNavigate();
   const { isLoading, isSuccess, isError, error, data } = useTracker(
     store.selectedOrgUnits,
     store.selectedProgram
@@ -115,12 +116,13 @@ const GATApp = () => {
                     {item.column}
                   </Th>
                 ))}
+                <Th>Action</Th>
               </Tr>
             </Thead>
             {isLoading && (
               <Tbody>
                 <Tr>
-                  <Td colSpan={9}>
+                  <Td colSpan={10}>
                     <Spinner />
                   </Td>
                 </Tr>
@@ -129,7 +131,7 @@ const GATApp = () => {
             {isSuccess && (
               <Tbody>
                 {data.map((d) => (
-                  <Tr key={d.instance}>
+                  <Tr key={d.instance} cursor="pointer" onClick={() => navigate({ to: `./activity/${d.instance}` })}>
                     {columns.map((item) => (
                       <Td key={`${d.instance}${item.name}`}>
                         <Text noOfLines={item.shortened ? 1 : 3}>
@@ -137,6 +139,7 @@ const GATApp = () => {
                         </Text>
                       </Td>
                     ))}
+                    <Td><a href={d.instance}>View Details</a></Td>
                   </Tr>
                 ))}
               </Tbody>
