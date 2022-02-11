@@ -1,15 +1,12 @@
 import { Box } from "@chakra-ui/react";
 import { useStore } from "effector-react";
 import {
-  Link,
-  MakeGenerics,
   Outlet,
   ReactLocation,
-  Router,
-  useMatch,
+  Router
 } from "react-location";
+import ActivityDetails from "./components/ActivityDetails";
 import GATApp from "./GATApp";
-import ActivityForm from "./components/ActivityForm";
 import { useLoader } from "./models/Queries";
 import { $store } from "./models/Store";
 
@@ -26,7 +23,19 @@ const MyApp = () => {
       {isSuccess && (
         <Router
           location={location}
-          routes={[{ path: "/", element: <GATApp /> }]}
+          routes={[
+            { path: "/", element: <GATApp /> },
+            {
+              path: "/activity", children: [
+                {
+                  path: ":id", element: <ActivityDetails />, children: [
+                    { path: "participants", element: <ActivityDetails /> },
+                    { path: "sessions", element: <ActivityDetails /> }
+                  ]
+                }
+              ]
+            }
+          ]}
         >
           <Outlet />
         </Router>
