@@ -20,14 +20,18 @@ export function useLoader(program) {
     programUnits: {
       resource: `programs/${program}`,
       params: {
-        fields: "organisationUnits[id],programTrackedEntityAttributes[trackedEntityAttribute[*,optionSet[*,options[*]]]]",
+        fields:
+          "organisationUnits[id],programTrackedEntityAttributes[mandatory,trackedEntityAttribute[*,optionSet[optionSetValue,options[id,name,code]]]]",
       },
     },
   };
   return useQuery("initial", async () => {
     const {
       me: { organisationUnits },
-      programUnits: { organisationUnits: units, programTrackedEntityAttributes },
+      programUnits: {
+        organisationUnits: units,
+        programTrackedEntityAttributes,
+      },
     } = await engine.query(query);
     const processedUnits = organisationUnits.map((unit) => {
       return {
