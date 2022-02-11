@@ -5,6 +5,7 @@ import {
   setSelectedOrgUnits,
   setUserOrgUnits,
   setProgramUnits,
+  setProgramTrackedEntityAttributes, //OSX Added
 } from "./Events";
 
 export function useLoader(program) {
@@ -19,14 +20,14 @@ export function useLoader(program) {
     programUnits: {
       resource: `programs/${program}`,
       params: {
-        fields: "organisationUnits[id]",
+        fields: "organisationUnits[id],programTrackedEntityAttributes[trackedEntityAttribute[*,optionSet[*,options[*]]]]",
       },
     },
   };
   return useQuery("initial", async () => {
     const {
       me: { organisationUnits },
-      programUnits: { organisationUnits: units },
+      programUnits: { organisationUnits: units, programTrackedEntityAttributes },
     } = await engine.query(query);
     const processedUnits = organisationUnits.map((unit) => {
       return {
@@ -40,6 +41,8 @@ export function useLoader(program) {
     setProgramUnits(units.map((o) => o.id));
     setUserOrgUnits(processedUnits);
     setSelectedOrgUnits(organisationUnits[0].id);
+    setProgramTrackedEntityAttributes(programTrackedEntityAttributes); //OSX Added
+
     return true;
   });
 }

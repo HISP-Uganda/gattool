@@ -13,6 +13,8 @@ import {
   FormControl,
   FormLabel,
   FormErrorMessage,
+  Select,
+  Input,
   FormHelperText,
 } from "@chakra-ui/react";
 import { useStore } from "effector-react";
@@ -20,6 +22,7 @@ import { $store } from "../models/Store";
 const ActivityForm = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const store = useStore($store);
+  
 
   return (
     <>
@@ -35,9 +38,27 @@ const ActivityForm = () => {
       <Modal closeOnOverlayClick={false} isOpen={isOpen} onClose={onClose} size="5xl">
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Create your account</ModalHeader>
+          <ModalHeader>Add New Group Activity</ModalHeader>
           <ModalCloseButton />
-          <ModalBody pb={6}></ModalBody>
+          <ModalBody pb={6}>
+            {
+              store.programTrackedEntityAttributes.map((ptea) => (
+                
+                <FormControl key={ptea.trackedEntityAttribute.id}>
+                  <FormLabel htmlFor='email'>{ptea.trackedEntityAttribute.name}</FormLabel>
+                  {
+                    ptea.trackedEntityAttribute.optionSetValue? <Select placeholder='Select option' id={ptea.trackedEntityAttribute.optionSet.id}>
+                    {
+                      ptea.trackedEntityAttribute.optionSet.options.map((option) =>{
+                        return <option value={option.code} key={option.id}>{option.name}</option>
+                      })
+                    }
+                  </Select> : <Input id={ptea.trackedEntityAttribute.id} type={ptea.trackedEntityAttribute.valueType} />
+                  }
+                </FormControl>
+              ))
+            }
+          </ModalBody>
           <ModalFooter>
             <Button colorScheme="blue" mr={3}>
               Save
