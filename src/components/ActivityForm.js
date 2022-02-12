@@ -1,27 +1,26 @@
-import React, { useEffect } from "react";
 import {
+  Button,
+  FormControl,
+  FormErrorMessage,
+  FormLabel,
+  Input,
   Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
   ModalBody,
   ModalCloseButton,
-  useDisclosure,
-  Button,
-  Text,
-  FormControl,
-  FormLabel,
-  FormErrorMessage,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
   Select,
-  Input,
-  FormHelperText,
+  Text,
+  useDisclosure,
 } from "@chakra-ui/react";
-import { format } from "date-fns";
 import { useDataEngine } from "@dhis2/app-runtime";
-import { useMutation, useQueryClient } from "react-query";
-import { useForm } from "react-hook-form";
+import { format } from "date-fns";
 import { useStore } from "effector-react";
+import React from "react";
+import { useForm } from "react-hook-form";
+import { useMutation, useQueryClient } from "react-query";
 import { $store } from "../models/Store";
 
 const rules = {
@@ -235,7 +234,11 @@ const ActivityForm = () => {
                         </Select>
                       )
                     ) : (
-                      <Input id={ptea.trackedEntityAttribute.id} {...record} type={ptea.trackedEntityAttribute.valueType} />
+                      <Input
+                        id={ptea.trackedEntityAttribute.id}
+                        {...record}
+                        type={ptea.trackedEntityAttribute.valueType}
+                      />
                     )}
                     <FormErrorMessage>
                       {errors.name && errors.name.message}

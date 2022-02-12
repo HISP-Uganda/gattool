@@ -5,7 +5,9 @@ import {
   setSelectedOrgUnits,
   setSelectedActivity,
   setUserOrgUnits,
-  setProgramTrackedEntityAttributes, //OSX Added
+  setProgramTrackedEntityAttributes,
+  setProgramStages,
+  setActive,
 } from "./Events";
 
 export const $store = domain
@@ -14,9 +16,11 @@ export const $store = domain
     userOrgUnits: [],
     selectedProgram: "IXxHJADVCkb",
     programUnits: [],
-    programTrackedEntityAttributes: [], //OSX Added
-    selectedActivity:"",
+    programTrackedEntityAttributes: [],
+    programStages: {},
+    selectedActivity: "",
     total: 0,
+    active: "",
   })
   .on(setUserOrgUnits, (state, userOrgUnits) => {
     return { ...state, userOrgUnits };
@@ -29,11 +33,22 @@ export const $store = domain
   })
   .on(changeTotal, (state, selectedProgram) => {
     return { ...state, selectedProgram };
-  }).on(setSelectedActivity, (state, selectedActivity) => {
+  })
+  .on(setSelectedActivity, (state, selectedActivity) => {
     return { ...state, selectedActivity };
   })
   .on(setProgramUnits, (state, programUnits) => {
     return { ...state, programUnits };
-  }).on(setProgramTrackedEntityAttributes, (state, programTrackedEntityAttributes) => { //OSX Added
-    return { ...state, programTrackedEntityAttributes };
+  })
+  .on(
+    setProgramTrackedEntityAttributes,
+    (state, programTrackedEntityAttributes) => {
+      return { ...state, programTrackedEntityAttributes };
+    }
+  )
+  .on(setProgramStages, (state, programStages) => {
+    return { ...state, programStages };
+  })
+  .on(setActive, (state, active) => {
+    return { ...state, active };
   });

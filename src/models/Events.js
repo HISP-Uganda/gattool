@@ -6,3 +6,5 @@ export const setSelectedProgram = domain.createEvent();
 export const setProgramUnits = domain.createEvent();
 export const setProgramTrackedEntityAttributes = domain.createEvent(); //OSX Added
 export const setSelectedActivity = domain.createEvent();
+export const setProgramStages = domain.createEvent();
+export const setActive = domain.createEvent();
