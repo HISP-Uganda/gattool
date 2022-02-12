@@ -3,6 +3,7 @@ import {
   changeTotal,
   setProgramUnits,
   setSelectedOrgUnits,
+  setSelectedActivity,
   setUserOrgUnits,
   setProgramTrackedEntityAttributes, //OSX Added
 } from "./Events";
@@ -14,6 +15,7 @@ export const $store = domain
     selectedProgram: "IXxHJADVCkb",
     programUnits: [],
     programTrackedEntityAttributes: [], //OSX Added
+    selectedActivity:"",
     total: 0,
   })
   .on(setUserOrgUnits, (state, userOrgUnits) => {
@@ -27,6 +29,8 @@ export const $store = domain
   })
   .on(changeTotal, (state, selectedProgram) => {
     return { ...state, selectedProgram };
+  }).on(setSelectedActivity, (state, selectedActivity) => {
+    return { ...state, selectedActivity };
   })
   .on(setProgramUnits, (state, programUnits) => {
     return { ...state, programUnits };
