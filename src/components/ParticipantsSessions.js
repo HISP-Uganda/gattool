@@ -114,6 +114,7 @@ const ParticipantsSessions = ({ data, id }) => {
                     .filter(({ eventDate }) => !!eventDate)
                     .map((participant) => (
                       <Tr key={participant.event}>
+                        {console.log(participant)}
                         <Td>{participant.ypDUCAS6juy}</Td>
                         {data.sessions.map((session) => (
                           <Td key={session.id}>

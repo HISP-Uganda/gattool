@@ -129,6 +129,8 @@ export const fetchInstance = async (id, engine) => {
   let { instance } = await engine.query(query);
   setSelectedOrgUnits(instance.orgUnit);
   const [enrollment] = instance.enrollments;
+  console.log(instance.attributes);
+  
   let data = {
     participants: [],
     sessions: [],
