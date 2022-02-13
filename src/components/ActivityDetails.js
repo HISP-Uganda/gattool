@@ -45,7 +45,7 @@ const ActivityDetails = () => {
               <Participants data={data} id={id} />
             </TabPanel>
             <TabPanel>
-              <ParticipantsSessions data={data} />
+              <ParticipantsSessions data={data} id={id} />
             </TabPanel>
           </TabPanels>
         </Tabs>

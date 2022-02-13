@@ -1,5 +1,5 @@
 import { useDataEngine } from "@dhis2/app-runtime";
-import { fromPairs } from "lodash";
+import { fromPairs, uniq } from "lodash";
 import { useQuery } from "react-query";
 import { sessions } from "../models/utils";
 import { generateUid } from "./uid";
@@ -112,9 +112,10 @@ export const fetchInstance = async (id, engine) => {
   };
   const participants = enrollment.events
     .filter(({ programStage }) => programStage === "aTZwDRoJnxj")
-    .map(({ dataValues, event }) => {
+    .map(({ dataValues, event, eventDate }) => {
       return {
         event,
+        eventDate,
         ...fromPairs(dataValues.map((dv) => [dv.dataElement, dv.value])),
       };
     });
@@ -127,12 +128,25 @@ export const fetchInstance = async (id, engine) => {
         dataValues.find((dv) => dv.dataElement === "n20LkH4ZBF8") || "";
       const date =
         dataValues.find((dv) => dv.dataElement === "RECl06RNilT") || "";
-      return `${code}${session}${date}`;
+      return `${code.value}${session.value}${date.value}`;
     });
-
+  const sessionDates = uniq(
+    enrollment.events
+      .filter((e) => e.programStage === "VzkQBBglj3O")
+      .map(({ dataValues }) => {
+        return (
+          dataValues.find((dv) => dv.dataElement === "RECl06RNilT")?.value || ""
+        );
+      })
+  );
   const event = generateUid();
   setActive(event);
-  data = { ...data, doneSessions, participants: [...participants, { event }] };
+  data = {
+    ...data,
+    doneSessions,
+    participants: [...participants, { event }],
+    sessionDates,
+  };
   const subGroup = instance.attributes.find(
     (a) => a.attribute === "mWyp85xIzXR"
   );
