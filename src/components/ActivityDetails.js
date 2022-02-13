@@ -19,7 +19,7 @@ const ActivityDetails = () => {
     params: { id },
   } = useMatch();
   const { data, error, isError, isLoading, isSuccess } = useInstance(id);
-
+  
   return (
     <Stack>
       <Flex
@@ -35,20 +35,25 @@ const ActivityDetails = () => {
       </Flex>
       {isLoading && <Spinner />}
       {isSuccess && (
-        <Tabs>
-          <TabList>
-            <Tab>Participants</Tab>
-            <Tab>Sessions</Tab>
-          </TabList>
-          <TabPanels>
-            <TabPanel>
-              <Participants data={data} id={id} />
-            </TabPanel>
-            <TabPanel>
-              <ParticipantsSessions data={data} id={id} />
-            </TabPanel>
-          </TabPanels>
-        </Tabs>
+        <Stack>
+          <Box>
+            <pre>{JSON.stringify(data.attributes)}</pre>
+          </Box>
+          <Tabs>
+            <TabList>
+              <Tab>Participants</Tab>
+              <Tab>Sessions</Tab>
+            </TabList>
+            <TabPanels>
+              <TabPanel>
+                <Participants data={data} id={id} />
+              </TabPanel>
+              <TabPanel>
+                <ParticipantsSessions data={data} id={id} />
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+        </Stack>
       )}
       {isError && <Box>{error.message}</Box>}
     </Stack>

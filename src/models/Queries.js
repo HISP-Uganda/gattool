@@ -90,6 +90,32 @@ export function useTracker(orgUnits, program) {
   });
 }
 
+export function useTrackerSearch(q) {
+  const engine = useDataEngine();
+  const query = {
+    instances: {
+      resource: "trackedEntityInstances/query.json",
+      params: {
+        program: "RDEklSXCD4C",
+        ouMode: "ALL",
+        attribute: `HLKc2AKR9jW:LIKE:${q}`,
+      },
+    },
+  };
+  return useQuery(["instances-search", q], async () => {
+    if (q) {
+      const {
+        instances: { rows, headers },
+      } = await engine.query(query);
+      const allData = rows.map((row) => {
+        return fromPairs(headers.map((r, i) => [r.name, row[i]]));
+      });
+      return allData;
+    }
+    return [];
+  });
+}
+
 export const fetchInstance = async (id, engine) => {
   const query = {
     instance: {
