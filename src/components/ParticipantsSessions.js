@@ -25,15 +25,14 @@ import {
   Th,
   Thead,
   Tr,
-  useDisclosure,
+  useDisclosure
 } from "@chakra-ui/react";
-import { useState } from "react";
 import { useDataEngine } from "@dhis2/app-runtime";
-import { useMutation, useQueryClient } from "react-query";
 import { useStore } from "effector-react";
-import { parseISO,format } from 'date-fns'
-import { generateUid } from "../models/uid";
+import { useState } from "react";
+import { useMutation, useQueryClient } from "react-query";
 import { $store } from "../models/Store";
+import { generateUid } from "../models/uid";
 
 const ParticipantsSessions = ({ data, id }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -114,7 +113,6 @@ const ParticipantsSessions = ({ data, id }) => {
                     .filter(({ eventDate }) => !!eventDate)
                     .map((participant) => (
                       <Tr key={participant.event}>
-                        {console.log(participant)}
                         <Td>{participant.ypDUCAS6juy}</Td>
                         {data.sessions.map((session) => (
                           <Td key={session.id}>

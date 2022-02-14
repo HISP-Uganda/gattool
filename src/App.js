@@ -1,6 +1,11 @@
-import { Box } from "@chakra-ui/react";
+import { Box, Stack, Spinner } from "@chakra-ui/react";
 import { useStore } from "effector-react";
-import { Outlet, ReactLocation, Router } from "react-location";
+import {
+  Outlet,
+  ReactLocation,
+  Router,
+  createHashHistory,
+} from "react-location";
 import { useDataEngine } from "@dhis2/app-runtime";
 
 import { useQueryClient } from "react-query";
@@ -9,7 +14,9 @@ import GATApp from "./GATApp";
 import { fetchInstance, useLoader } from "./models/Queries";
 import { $store } from "./models/Store";
 
-const location = new ReactLocation();
+const hashHistory = createHashHistory();
+
+const location = new ReactLocation({ history: hashHistory });
 
 const MyApp = () => {
   const engine = useDataEngine();
@@ -20,7 +27,11 @@ const MyApp = () => {
   );
   return (
     <>
-      {isLoading && <Box>Loading ...</Box>}
+      {isLoading && (
+        <Stack alignItems="center" justifyContent="center" h="100%">
+          <Spinner />
+        </Stack>
+      )}
       {isSuccess && (
         <Router
           location={location}

@@ -94,6 +94,34 @@ const Participants = ({ data, id }) => {
       console.log(error);
     }
   }
+  async function generateCode(beneficiary) {
+    const parish = store.selectedOrgUnits;
+    const {
+      location: {
+        parent: { code },
+      },
+    } = await engine.query({
+      location: {
+        resource: `organisationUnits/${parish}.json`,
+        params: {
+          fields: "parent[code]",
+        },
+      },
+    });
+    const participantsWith = data.participants.filter(
+      ({ eventDate }) => !!eventDate
+    );
+
+    const generated = [
+      code,
+      beneficiary === "Prevention" ? "PREV" : "IND",
+      String(participantsWith.length + 1).padStart(4, "0"),
+    ].join("-");
+    setValue("ypDUCAS6juy", generated);
+    setValue("vfHaBC1ONln", "");
+    setValue("ZUKC6mck81A", "");
+    setValue("eXWM3v3oIKu", "");
+  }
   const edit = (defaults) => {
     const { event, ...rest } = defaults;
     store.programStages["aTZwDRoJnxj"].forEach(({ id }) =>
@@ -104,6 +132,8 @@ const Participants = ({ data, id }) => {
   useEffect(() => {
     if (beneficiary && beneficiary === "Comprehensive") {
       onOpen();
+    } else if (beneficiary) {
+      generateCode(beneficiary);
     }
   }, [beneficiary]);
 

@@ -29,36 +29,43 @@ const columns = [
     name: "Ah4eyDOBf51",
     column: "Name of CSO/Partner",
     shortened: false,
+    w: "100px",
   },
   {
     name: "cYDK0qZSri9",
     column: "Group/Club Name/Other",
     shortened: false,
+    w: "100px",
   },
   {
     name: "bFnIjGJpf9t",
     column: "Group Type",
     shortened: false,
+    w: "100px",
   },
   {
     name: "y1N7h8fdMNC",
     column: "Other Group Type",
     shortened: false,
+    w: "100px",
   },
   {
     name: "D7wRx9mgwns",
     column: "Venue",
     shortened: false,
+    w: "100px",
   },
   {
     name: "dqbuxC5GB1M",
     column: "Activity",
     shortened: false,
+    w: "100px",
   },
   {
     name: "b76aEJUPnLy",
     column: "Date of Activity",
     shortened: false,
+    w: "100px",
   },
   {
     name: "Pll79WEVWHj",
@@ -69,6 +76,7 @@ const columns = [
     name: "oqabsHE0ZUI",
     column: "Code",
     shortened: false,
+    w: "100px",
   },
   {
     name: "mWyp85xIzXR",
@@ -108,21 +116,20 @@ const GATApp = () => {
           <ActivityForm />
         </Stack>
         <Box overflow="auto">
-          <Table variant="striped" colorScheme="gray">
+          <Table variant="striped" colorScheme="gray" size="sm">
             <Thead>
               <Tr>
                 {columns.map((item) => (
-                  <Th key={item.name} minW="200px">
+                  <Th key={item.name} minW="300px">
                     {item.column}
                   </Th>
                 ))}
-                <Th>Action</Th>
               </Tr>
             </Thead>
             {isLoading && (
               <Tbody>
                 <Tr>
-                  <Td colSpan={10}>
+                  <Td colSpan={10} textAlign="center">
                     <Spinner />
                   </Td>
                 </Tr>
@@ -131,7 +138,11 @@ const GATApp = () => {
             {isSuccess && (
               <Tbody>
                 {data.map((d) => (
-                  <Tr key={d.instance} cursor="pointer" onClick={() => navigate({ to: `./activity/${d.instance}` })}>
+                  <Tr
+                    key={d.instance}
+                    cursor="pointer"
+                    onClick={() => navigate({ to: `./activity/${d.instance}` })}
+                  >
                     {columns.map((item) => (
                       <Td key={`${d.instance}${item.name}`}>
                         <Text noOfLines={item.shortened ? 1 : 3}>
@@ -139,7 +150,6 @@ const GATApp = () => {
                         </Text>
                       </Td>
                     ))}
-                    <Td><a href={d.instance}>View Details</a></Td>
                   </Tr>
                 ))}
               </Tbody>
@@ -147,7 +157,7 @@ const GATApp = () => {
             {isError && (
               <Tbody>
                 <Tr>
-                  <Td colSpan={9}>{error.message}</Td>
+                  <Td colSpan={8}>{error.message}</Td>
                 </Tr>
               </Tbody>
             )}
