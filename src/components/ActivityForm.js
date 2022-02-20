@@ -13,14 +13,13 @@ import {
   ModalOverlay,
   Select,
   Text,
-  useDisclosure,
 } from "@chakra-ui/react";
 import { useDataEngine } from "@dhis2/app-runtime";
 import { format } from "date-fns";
 import { useStore } from "effector-react";
-import React from "react";
 import { useForm } from "react-hook-form";
 import { useMutation, useQueryClient } from "react-query";
+import { isEmpty } from "lodash";
 import { $store } from "../models/Store";
 
 const rules = {
@@ -87,32 +86,35 @@ const rules = {
       id: "QV3TyZXPWgv",
     },
   ],
-  "7. Early Childhood Development (ECD)":[
+  "7. Early Childhood Development (ECD)": [
     {
       code: "ECD",
       name: "GAT. Early Childhood Development",
       id: "QHaULS891IF",
-    }
+    },
   ],
   "5. Stepping Stones": [],
   "6. Other (Specify)": [],
 };
-const  ActivityForm = () => {
+const ActivityForm = ({
+  onOpen,
+  onClose,
+  isOpen,
+  otherAttributes = {},
+  defaultValues = {},
+}) => {
   const engine = useDataEngine();
   const queryClient = useQueryClient();
   const {
     handleSubmit,
     register,
     formState: { errors, isSubmitting },
-    watch,
     getValues,
     setValue,
-  } = useForm();
-  const { isOpen, onOpen, onClose } = useDisclosure();
+    watch,
+  } = useForm({ defaultValues });
+  watch("bFnIjGJpf9t");
   const store = useStore($store);
-
-  const groupType = watch("bFnIjGJpf9t");
-
   const addTrackedEntityInstance = async (data) => {
     const mutation = {
       type: "create",
@@ -123,33 +125,33 @@ const  ActivityForm = () => {
   };
 
   async function activityCode() {
-    const parish = store.selectedOrgUnits;
-    const {
-      location: {
-        parent: { code },
-      },
-    } = await engine.query({
-      location: {
-        resource: `organisationUnits/${parish}.json`,
-        params: {
-          fields: "parent[code]",
+    if (isEmpty(defaultValues)) {
+      const parish = store.selectedOrgUnits;
+      const {
+        location: {
+          parent: { code },
         },
-      },
-    });
+      } = await engine.query({
+        location: {
+          resource: `organisationUnits/${parish}.json`,
+          params: {
+            fields: "parent[code]",
+          },
+        },
+      });
 
-   const {
-      generatedCode: {
-        value,
-      },
-    } = await engine.query({
-      generatedCode: {
-        resource: `trackedEntityAttributes/oqabsHE0ZUI/generate.json`,
-        params: {
-          ORG_UNIT_CODE: code
+      const {
+        generatedCode: { value },
+      } = await engine.query({
+        generatedCode: {
+          resource: `trackedEntityAttributes/oqabsHE0ZUI/generate.json`,
+          params: {
+            ORG_UNIT_CODE: code,
+          },
         },
-      },
-    });
-    setValue("oqabsHE0ZUI", value);
+      });
+      setValue("oqabsHE0ZUI", value);
+    }
     onOpen();
   }
 
@@ -160,26 +162,43 @@ const  ActivityForm = () => {
         store.selectedOrgUnits,
         store.selectedProgram,
       ]);
+      if (!isEmpty(otherAttributes)) {
+        queryClient.invalidateQueries([
+          "instance",
+          otherAttributes.trackedEntityInstance,
+        ]);
+      }
     },
   });
 
   async function onSubmit(values) {
     try {
-      const data = {
+      let data = {
         attributes: Object.entries(values).map(([attribute, value]) => {
           return { attribute, value };
         }),
         trackedEntityType: "jUBCsJonWQ2",
         orgUnit: store.selectedOrgUnits,
-        enrollments: [
-          {
-            enrollmentDate: format(new Date(), "yyyy-MM-dd"),
-            incident: format(new Date(), "yyyy-MM-dd"),
-            program: store.selectedProgram,
-            orgUnit: store.selectedOrgUnits,
-          },
-        ],
       };
+
+      if (isEmpty(otherAttributes)) {
+        data = {
+          ...data,
+          enrollments: [
+            {
+              enrollmentDate: format(new Date(), "yyyy-MM-dd"),
+              incident: format(new Date(), "yyyy-MM-dd"),
+              program: store.selectedProgram,
+              orgUnit: store.selectedOrgUnits,
+            },
+          ],
+        };
+      } else if (otherAttributes.trackedEntityInstance) {
+        data = {
+          ...data,
+          trackedEntityInstance: otherAttributes.trackedEntityInstance,
+        };
+      }
       await mutateAsync(data);
       onClose();
     } catch (error) {
@@ -190,16 +209,6 @@ const  ActivityForm = () => {
 
   const getOptions = () => {
     return rules[getValues("bFnIjGJpf9t")] || [];
-  };
-
-  const getFiled = (field, record) => {
-    if (field.id === "y1N7h8fdMNC") {
-      if (groupType === "6. Other (Specify)") {
-        <Input id={field.id} {...record} type={field.valueType} />;
-      }
-      return null;
-    }
-    return <Input id={field.id} {...record} type={field.valueType} />;
   };
 
   return (

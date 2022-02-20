@@ -16,6 +16,7 @@ import {
   Thead,
   Tr,
   Button,
+  useDisclosure,
 } from "@chakra-ui/react";
 import Search16 from "@dhis2/ui-icons/build/cjs/react/Search16";
 import { useStore } from "effector-react";
@@ -89,22 +90,12 @@ const columns = [
 const GATApp = () => {
   const store = useStore($store);
   const navigate = useNavigate();
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
   const { isLoading, isSuccess, isError, error, data } = useTracker(
     store.selectedOrgUnits,
     store.selectedProgram
-  );
-
-  // Edit Group Activity
-  const edit = (defaults) => {
-    // const { trackedEntityInstance, ...rest } = defaults;
-    // store.selectedActivity["aTZwDRoJnxj"].forEach(({ id }) =>
-    //   setValue(id, rest[id])
-    // );
-   
-    // setActive(trackedEntityInstance);
-
-    onOp
-  };
+  );  
 
   return (
     <Stack>
@@ -126,19 +117,19 @@ const GATApp = () => {
           {/* <Button colorScheme="teal" variant="ghost">
             Export to Excel
           </Button> */}
-          <ActivityForm />
+          <ActivityForm onOpen={onOpen} onClose={onClose} isOpen={isOpen} defaultValues={{}}/>
         </Stack>
         <Box overflow="auto">
           <Table variant="striped" colorScheme="gray" size="sm">
             <Thead>
               <Tr>
-                {columns.map((item) => <>
-
-                  <Th key={item.name} minW="300px">
-                    {item.column}
-                  </Th>
-                </>)}
-                <Th>Action</Th>
+                {columns.map((item) => (
+                  <>
+                    <Th key={item.name} minW="300px">
+                      {item.column}
+                    </Th>
+                  </>
+                ))}
               </Tr>
             </Thead>
             {isLoading && (
@@ -158,17 +149,15 @@ const GATApp = () => {
                     cursor="pointer"
                     onClick={() => navigate({ to: `./activity/${d.instance}` })}
                   >
-                    {columns.map((item) => <>
-                      <Td key={`${d.instance}${item.name}`}>
-                        <Text noOfLines={item.shortened ? 1 : 3}>
-                          {d[item.name]}
-                        </Text>
-                      </Td>
-                    </>)}
-                    <Td><Button size="xs" onClick={() => edit(d)}>
-                        Edit
-                      </Button>
-                      </Td>
+                    {columns.map((item) => (
+                      <>
+                        <Td key={`${d.instance}${item.name}`}>
+                          <Text noOfLines={item.shortened ? 1 : 3}>
+                            {d[item.name]}
+                          </Text>
+                        </Td>
+                      </>
+                    ))}
                   </Tr>
                 ))}
               </Tbody>
