@@ -1,8 +1,10 @@
 import {
   Box,
+  Button,
   Flex,
   Heading,
   HStack,
+  Spacer,
   Spinner,
   Stack,
   Tab,
@@ -21,7 +23,7 @@ const ActivityDetails = () => {
     params: { id },
   } = useMatch();
   const { data, error, isError, isLoading, isSuccess } = useInstance(id);
-  
+
   return (
     <Stack>
       <Flex
@@ -34,23 +36,27 @@ const ActivityDetails = () => {
         <Heading as="h4" size="lg" color="blackAlpha.600">
           Group Activity: {data.attributes.dqbuxC5GB1M}
         </Heading>
+        <Spacer />
+        <Button variant="outline" borderColor="red.400" size="xs" marginRight="20px" >
+          Delete Activity
+        </Button>
       </Flex>
       {isLoading && <Spinner />}
       {isSuccess && (
         <Stack>
           <Box bg="blue.100" p="20px">
             <HStack w='100%' spacing='24px' alignContent="center" alignItems="center">
-                <Box w='20%'>NAME OF CSO/PARTNER: <Text as='mark'>{data.attributes.Ah4eyDOBf51}</Text> </Box>
-                <Box w='20%'>GROUP/CLUB NAME/OTHER: <Text as='mark'>{data.attributes.cYDK0qZSri9}</Text></Box>
-                <Box w='20%'>GROUP TYPE: <Text as='mark'>{data.attributes.bFnIjGJpf9t}</Text> </Box>
-                <Box w='20%'>SUB GROUP: <Text as='mark'>{data.attributes.mWyp85xIzXR}</Text> </Box>
-                <Box w='20%'>VENUE: <Text as='mark'>{data.attributes.D7wRx9mgwns}</Text> </Box>
+              <Box w='20%'>NAME OF CSO/PARTNER: <Text as='mark'>{data.attributes.Ah4eyDOBf51}</Text> </Box>
+              <Box w='20%'>GROUP/CLUB NAME/OTHER: <Text as='mark'>{data.attributes.cYDK0qZSri9}</Text></Box>
+              <Box w='20%'>GROUP TYPE: <Text as='mark'>{data.attributes.bFnIjGJpf9t}</Text> </Box>
+              <Box w='20%'>SUB GROUP: <Text as='mark'>{data.attributes.mWyp85xIzXR}</Text> </Box>
+              <Box w='20%'>VENUE: <Text as='mark'>{data.attributes.D7wRx9mgwns}</Text> </Box>
             </HStack>
             <HStack spacing='24px' alignContent="center" alignItems="center" mt="10px">
-                <Box w='25%'>ACTIVITY: <Text as='mark'>{data.attributes.dqbuxC5GB1M}</Text> </Box>
-                <Box w='25%'>CODE: <Text as='mark'>{data.attributes.oqabsHE0ZUI}</Text></Box>
-                <Box w='25%'>DATE OF ACTIVITY: <Text as='mark'>{data.attributes.b76aEJUPnLy}</Text> </Box>
-                <Box w='25%'>ACTIVITY DESCRIPTION: <Text as='mark'>{data.attributes.Pll79WEVWHj}</Text></Box>
+              <Box w='25%'>ACTIVITY: <Text as='mark'>{data.attributes.dqbuxC5GB1M}</Text> </Box>
+              <Box w='25%'>CODE: <Text as='mark'>{data.attributes.oqabsHE0ZUI}</Text></Box>
+              <Box w='25%'>DATE OF ACTIVITY: <Text as='mark'>{data.attributes.b76aEJUPnLy}</Text> </Box>
+              <Box w='25%'>ACTIVITY DESCRIPTION: <Text as='mark'>{data.attributes.Pll79WEVWHj}</Text></Box>
             </HStack>
           </Box>
           <Tabs mt='200px'>

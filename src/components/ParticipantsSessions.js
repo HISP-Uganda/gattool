@@ -80,9 +80,9 @@ const ParticipantsSessions = ({ data, id }) => {
   };
   return (
     <Stack direction="column">
-      <Box textAlign="right" w="100%">
+      <Box textAlign="right" w="100%" bg="gray.100">
         <Button onClick={onOpen} colorScheme="teal" variant="ghost">
-          <Text>Add Session</Text>
+          <Text>+ Add Sessions</Text>
         </Button>
       </Box>
       <Accordion>

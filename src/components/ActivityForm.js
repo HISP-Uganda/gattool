@@ -87,10 +87,17 @@ const rules = {
       id: "QV3TyZXPWgv",
     },
   ],
+  "7. Early Childhood Development (ECD)":[
+    {
+      code: "ECD",
+      name: "GAT. Early Childhood Development",
+      id: "QHaULS891IF",
+    }
+  ],
   "5. Stepping Stones": [],
   "6. Other (Specify)": [],
 };
-const ActivityForm = () => {
+const  ActivityForm = () => {
   const engine = useDataEngine();
   const queryClient = useQueryClient();
   const {
@@ -99,6 +106,7 @@ const ActivityForm = () => {
     formState: { errors, isSubmitting },
     watch,
     getValues,
+    setValue,
   } = useForm();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const store = useStore($store);
@@ -113,6 +121,37 @@ const ActivityForm = () => {
     };
     return await engine.mutate(mutation);
   };
+
+  async function activityCode() {
+    const parish = store.selectedOrgUnits;
+    const {
+      location: {
+        parent: { code },
+      },
+    } = await engine.query({
+      location: {
+        resource: `organisationUnits/${parish}.json`,
+        params: {
+          fields: "parent[code]",
+        },
+      },
+    });
+
+   const {
+      generatedCode: {
+        value,
+      },
+    } = await engine.query({
+      generatedCode: {
+        resource: `trackedEntityAttributes/oqabsHE0ZUI/generate.json`,
+        params: {
+          ORG_UNIT_CODE: code
+        },
+      },
+    });
+    setValue("oqabsHE0ZUI", value);
+    onOpen();
+  }
 
   const { mutateAsync } = useMutation(addTrackedEntityInstance, {
     onSuccess: () => {
@@ -166,7 +205,7 @@ const ActivityForm = () => {
   return (
     <>
       <Button
-        onClick={onOpen}
+        onClick={activityCode}
         colorScheme="teal"
         variant="ghost"
         isDisabled={store.programUnits.indexOf(store.selectedOrgUnits) === -1}

@@ -4,9 +4,10 @@ export const sessions = {
   "Financial Literacy": "LUR9gZUkcrr",
   "SPM Training": "EYMKGdEeniO",
   "Bank Linkages": "gmEcQwHbivM",
-  SINOVUYO: "ptI9Geufl7R",
+  "SINOVUYO": "ptI9Geufl7R",
   "MOE Journeys Plus": "HkuYbbefaEM",
   "MOH Journeys curriculum": "P4tTIlhX1yB",
   "No means No sessions (Boys)": "WuPXlmvSfVJ",
   "No means No sessions (Girls)": "okgcyLQNVFe",
+  "ECD":"Wt9PXVv5Yvd",
 };

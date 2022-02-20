@@ -15,6 +15,7 @@ import {
   Th,
   Thead,
   Tr,
+  Button,
 } from "@chakra-ui/react";
 import Search16 from "@dhis2/ui-icons/build/cjs/react/Search16";
 import { useStore } from "effector-react";
@@ -93,6 +94,18 @@ const GATApp = () => {
     store.selectedProgram
   );
 
+  // Edit Group Activity
+  const edit = (defaults) => {
+    // const { trackedEntityInstance, ...rest } = defaults;
+    // store.selectedActivity["aTZwDRoJnxj"].forEach(({ id }) =>
+    //   setValue(id, rest[id])
+    // );
+   
+    // setActive(trackedEntityInstance);
+
+    onOp
+  };
+
   return (
     <Stack>
       <Flex alignItems="center" justifyContent="center" w="100%">
@@ -119,17 +132,19 @@ const GATApp = () => {
           <Table variant="striped" colorScheme="gray" size="sm">
             <Thead>
               <Tr>
-                {columns.map((item) => (
+                {columns.map((item) => <>
+
                   <Th key={item.name} minW="300px">
                     {item.column}
                   </Th>
-                ))}
+                </>)}
+                <Th>Action</Th>
               </Tr>
             </Thead>
             {isLoading && (
               <Tbody>
                 <Tr>
-                  <Td colSpan={10} textAlign="center">
+                  <Td colSpan={11} textAlign="center">
                     <Spinner />
                   </Td>
                 </Tr>
@@ -143,13 +158,17 @@ const GATApp = () => {
                     cursor="pointer"
                     onClick={() => navigate({ to: `./activity/${d.instance}` })}
                   >
-                    {columns.map((item) => (
+                    {columns.map((item) => <>
                       <Td key={`${d.instance}${item.name}`}>
                         <Text noOfLines={item.shortened ? 1 : 3}>
                           {d[item.name]}
                         </Text>
                       </Td>
-                    ))}
+                    </>)}
+                    <Td><Button size="xs" onClick={() => edit(d)}>
+                        Edit
+                      </Button>
+                      </Td>
                   </Tr>
                 ))}
               </Tbody>
@@ -157,7 +176,7 @@ const GATApp = () => {
             {isError && (
               <Tbody>
                 <Tr>
-                  <Td colSpan={8}>{error.message}</Td>
+                  <Td colSpan={11}>{error.message}</Td>
                 </Tr>
               </Tbody>
             )}

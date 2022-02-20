@@ -21,6 +21,7 @@ import {
   FormLabel,
   Box,
   Spinner,
+  Spacer,
 } from "@chakra-ui/react";
 import { useDataEngine } from "@dhis2/app-runtime";
 import { format } from "date-fns";
@@ -129,6 +130,7 @@ const Participants = ({ data, id }) => {
     );
     setActive(event);
   };
+
   useEffect(() => {
     if (beneficiary && beneficiary === "Comprehensive") {
       onOpen();
@@ -162,8 +164,8 @@ const Participants = ({ data, id }) => {
                 {store.programStages["aTZwDRoJnxj"].map((a) => {
                   const record = a.compulsory
                     ? register(a.id, {
-                        required: "This is required",
-                      })
+                      required: "This is required",
+                    })
                     : register(a.id);
                   return (
                     <Td key={a.id}>
@@ -209,9 +211,16 @@ const Participants = ({ data, id }) => {
                       Submit
                     </Button>
                   ) : (
-                    <Button size="xs" onClick={() => edit(participant)}>
-                      Edit
-                    </Button>
+                    <>
+                      <Button size="xs" onClick={() => edit(participant)}>
+                        Edit
+                      </Button>
+
+                      <Spacer />
+                      <Button variant="outline" borderColor="red.400" size="xs" marginRight="20px" >
+                        Delete Activity
+                      </Button></>
+
                   )}
                 </Td>
               </Tr>
