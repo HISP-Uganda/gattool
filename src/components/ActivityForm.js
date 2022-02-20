@@ -12,6 +12,7 @@ import {
   ModalHeader,
   ModalOverlay,
   Select,
+  Stack,
   Text,
 } from "@chakra-ui/react";
 import { useDataEngine } from "@dhis2/app-runtime";
@@ -100,6 +101,7 @@ const ActivityForm = ({
   onOpen,
   onClose,
   isOpen,
+  mode = 'NEW',
   otherAttributes = {},
   defaultValues = {},
 }) => {
@@ -219,7 +221,7 @@ const ActivityForm = ({
         variant="ghost"
         isDisabled={store.programUnits.indexOf(store.selectedOrgUnits) === -1}
       >
-        <Text>+ Add Group Activity</Text>
+        {mode === 'NEW' ? <Text>+ Add Group Activity</Text> : <Text>Edit</Text>}
       </Button>
 
       <Modal
@@ -234,78 +236,80 @@ const ActivityForm = ({
           <ModalCloseButton />
           <form onSubmit={handleSubmit(onSubmit)}>
             <ModalBody pb={6}>
-              {store.programTrackedEntityAttributes.map((ptea) => {
-                const record = ptea.mandatory
-                  ? register(ptea.trackedEntityAttribute.id, {
+              <Stack>
+                {store.programTrackedEntityAttributes.map((ptea) => {
+                  const record = ptea.mandatory
+                    ? register(ptea.trackedEntityAttribute.id, {
                       required: "This is required",
                     })
-                  : register(ptea.trackedEntityAttribute.id);
-                return (
-                  <FormControl
-                    key={ptea.trackedEntityAttribute.id}
-                    isRequired={ptea.mandatory}
-                    isInvalid={errors[ptea.trackedEntityAttribute.id]}
-                  >
-                    <FormLabel htmlFor="email">
-                      {ptea.trackedEntityAttribute.name}
-                    </FormLabel>
-                    {ptea.trackedEntityAttribute.optionSetValue ? (
-                      ptea.trackedEntityAttribute.id === "mWyp85xIzXR" ? (
-                        <Select
-                          placeholder="Select option"
-                          id={ptea.trackedEntityAttribute.id}
-                          {...record}
-                        >
-                          {getOptions().map((option) => {
-                            return (
-                              <option key={option.id} value={option.code}>
-                                {option.name}
-                              </option>
-                            );
-                          })}
-                        </Select>
-                      ) : (
-                        <Select
-                          placeholder="Select option"
-                          id={ptea.trackedEntityAttribute.id}
-                          {...record}
-                        >
-                          {ptea.trackedEntityAttribute.optionSet.options.map(
-                            (option) => {
+                    : register(ptea.trackedEntityAttribute.id);
+                  return (
+                    <FormControl
+                      key={ptea.trackedEntityAttribute.id}
+                      isRequired={ptea.mandatory}
+                      isInvalid={errors[ptea.trackedEntityAttribute.id]}
+                    >
+                      <FormLabel htmlFor="email">
+                        {ptea.trackedEntityAttribute.name}
+                      </FormLabel>
+                      {ptea.trackedEntityAttribute.optionSetValue ? (
+                        ptea.trackedEntityAttribute.id === "mWyp85xIzXR" ? (
+                          <Select
+                            placeholder="Select option"
+                            id={ptea.trackedEntityAttribute.id}
+                            {...record}
+                          >
+                            {getOptions().map((option) => {
                               return (
                                 <option key={option.id} value={option.code}>
                                   {option.name}
                                 </option>
                               );
-                            }
-                          )}
-                        </Select>
-                      )
-                    ) : (
-                      <Input
-                        id={ptea.trackedEntityAttribute.id}
-                        {...record}
-                        type={ptea.trackedEntityAttribute.valueType}
-                      />
-                    )}
-                    <FormErrorMessage>
-                      {errors.name && errors.name.message}
-                    </FormErrorMessage>
-                  </FormControl>
-                );
-              })}
+                            })}
+                          </Select>
+                        ) : (
+                          <Select
+                            placeholder="Select option"
+                            id={ptea.trackedEntityAttribute.id}
+                            {...record}
+                          >
+                            {ptea.trackedEntityAttribute.optionSet.options.map(
+                              (option) => {
+                                return (
+                                  <option key={option.id} value={option.code}>
+                                    {option.name}
+                                  </option>
+                                );
+                              }
+                            )}
+                          </Select>
+                        )
+                      ) : (
+                        <Input
+                          id={ptea.trackedEntityAttribute.id}
+                          {...record}
+                          type={ptea.trackedEntityAttribute.valueType}
+                        />
+                      )}
+                      <FormErrorMessage>
+                        {errors.name && errors.name.message}
+                      </FormErrorMessage>
+                    </FormControl>
+                  );
+                })}
+              </Stack>
             </ModalBody>
             <ModalFooter>
-              <Button
-                colorScheme="blue"
-                mr={3}
-                mt={4}
-                isLoading={isSubmitting}
-                type="submit"
-              >
-                Save
-              </Button>
-              <Button onClick={onClose}>Cancel</Button>
+              <Stack spacing="30px" direction="row">
+                <Button
+                  colorScheme="blue"
+                  isLoading={isSubmitting}
+                  type="submit"
+                >
+                  Save
+                </Button>
+                <Button onClick={onClose}>Cancel</Button>
+              </Stack>
             </ModalFooter>
           </form>
         </ModalContent>

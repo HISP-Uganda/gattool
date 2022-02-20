@@ -15,7 +15,6 @@ import {
   Th,
   Thead,
   Tr,
-  Button,
   useDisclosure,
 } from "@chakra-ui/react";
 import Search16 from "@dhis2/ui-icons/build/cjs/react/Search16";
@@ -93,9 +92,9 @@ const GATApp = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const { isLoading, isSuccess, isError, error, data } = useTracker(
-    store.selectedOrgUnits,
+    store.currentUnit,
     store.selectedProgram
-  );  
+  );
 
   return (
     <Stack>
@@ -117,18 +116,16 @@ const GATApp = () => {
           {/* <Button colorScheme="teal" variant="ghost">
             Export to Excel
           </Button> */}
-          <ActivityForm onOpen={onOpen} onClose={onClose} isOpen={isOpen} defaultValues={{}}/>
+          <ActivityForm onOpen={onOpen} onClose={onClose} isOpen={isOpen} defaultValues={{}} />
         </Stack>
         <Box overflow="auto">
           <Table variant="striped" colorScheme="gray" size="sm">
             <Thead>
               <Tr>
                 {columns.map((item) => (
-                  <>
-                    <Th key={item.name} minW="300px">
-                      {item.column}
-                    </Th>
-                  </>
+                  <Th key={item.name} minW="300px">
+                    {item.column}
+                  </Th>
                 ))}
               </Tr>
             </Thead>
@@ -150,13 +147,11 @@ const GATApp = () => {
                     onClick={() => navigate({ to: `./activity/${d.instance}` })}
                   >
                     {columns.map((item) => (
-                      <>
-                        <Td key={`${d.instance}${item.name}`}>
-                          <Text noOfLines={item.shortened ? 1 : 3}>
-                            {d[item.name]}
-                          </Text>
-                        </Td>
-                      </>
+                      <Td key={`${d.instance}${item.name}`}>
+                        <Text noOfLines={item.shortened ? 1 : 3}>
+                          {d[item.name]}
+                        </Text>
+                      </Td>
                     ))}
                   </Tr>
                 ))}

@@ -13,19 +13,58 @@ import {
   TabPanels,
   Tabs,
   Text,
-  useDisclosure,
+  useDisclosure
 } from "@chakra-ui/react";
-import { useMatch } from "react-location";
+import { useState } from 'react';
+import { useDataEngine } from "@dhis2/app-runtime";
+import { useStore } from "effector-react";
+import { useMatch, useNavigate } from "react-location";
+import { useMutation, useQueryClient } from 'react-query';
 import { useInstance } from "../models/Queries";
+import { $store } from "../models/Store";
+import ActivityForm from "./ActivityForm";
 import Participants from "./Participants";
 import ParticipantsSessions from "./ParticipantsSessions";
-import ActivityForm from "./ActivityForm";
 const ActivityDetails = () => {
+  const engine = useDataEngine();
+  const [deleting, setDeleting] = useState(false)
+
+  const queryClient = useQueryClient();
+  const store = useStore($store);
   const {
     params: { id },
   } = useMatch();
+  const navigate = useNavigate()
   const { data, error, isError, isLoading, isSuccess } = useInstance(id);
   const { isOpen, onOpen, onClose } = useDisclosure();
+
+  async function deleteInstance(instance) {
+    const mutation = {
+      type: "delete",
+      resource: "trackedEntityInstances",
+      id: instance,
+    };
+    await engine.mutate(mutation)
+  }
+
+  const { mutateAsync } = useMutation(deleteInstance, {
+    onSuccess: () => {
+      queryClient.invalidateQueries([
+        "instances",
+        store.currentUnit,
+        store.selectedProgram,
+      ]);
+    },
+  });
+
+  const deleteActivity = async () => {
+    setDeleting(true)
+    await mutateAsync(id);
+    setDeleting(false)
+    navigate({ to: '/' })
+  }
+
+
   return (
     <Stack>
       <Flex
@@ -47,12 +86,15 @@ const ActivityDetails = () => {
           otherAttributes={{
             trackedEntityInstance: data.trackedEntityInstance,
           }}
+          mode="EDIT"
         />
         <Button
           variant="outline"
           borderColor="red.400"
           size="xs"
           marginRight="20px"
+          isLoading={deleting}
+          onClick={deleteActivity}
         >
           Delete Activity
         </Button>

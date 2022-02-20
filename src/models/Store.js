@@ -8,12 +8,14 @@ import {
   setProgramTrackedEntityAttributes,
   setProgramStages,
   setActive,
+  setCurrentUnit,
 } from "./Events";
 
 export const $store = domain
   .createStore({
     selectedOrgUnits: "",
     userOrgUnits: [],
+    currentUnit: "",
     selectedProgram: "IXxHJADVCkb",
     programUnits: [],
     programTrackedEntityAttributes: [],
@@ -44,6 +46,11 @@ export const $store = domain
     setProgramTrackedEntityAttributes,
     (state, programTrackedEntityAttributes) => {
       return { ...state, programTrackedEntityAttributes };
+    }
+  ).on(
+    setCurrentUnit,
+    (state, currentUnit) => {
+      return { ...state, currentUnit };
     }
   )
   .on(setProgramStages, (state, programStages) => {

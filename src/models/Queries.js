@@ -9,7 +9,8 @@ import {
   setProgramUnits,
   setProgramTrackedEntityAttributes,
   setProgramStages,
-  setActive, //OSX Added
+  setActive,
+  setCurrentUnit, //OSX Added
 } from "./Events";
 
 export function useLoader(program) {
@@ -59,6 +60,7 @@ export function useLoader(program) {
     });
     setProgramUnits(units.map((o) => o.id));
     setUserOrgUnits(processedUnits);
+    setCurrentUnit(organisationUnits[0].id)
     setSelectedOrgUnits(organisationUnits[0].id);
     setProgramTrackedEntityAttributes(programTrackedEntityAttributes);
     setProgramStages(fromPairs(processed));
@@ -138,7 +140,7 @@ export const fetchInstance = async (id, engine) => {
     ),
   };
   const participants = enrollment.events
-    .filter(({ programStage }) => programStage === "aTZwDRoJnxj")
+    .filter((e) => e.programStage === "aTZwDRoJnxj" && e.deleted == false)
     .map(({ dataValues, event, eventDate }) => {
       return {
         event,
@@ -147,19 +149,19 @@ export const fetchInstance = async (id, engine) => {
       };
     });
   const doneSessions = enrollment.events
-    .filter((e) => e.programStage === "VzkQBBglj3O")
-    .map(({ dataValues }) => {
+    .filter((e) => e.programStage === "VzkQBBglj3O" && e.deleted == false)
+    .map(({ dataValues, event }) => {
       const code =
         dataValues.find((dv) => dv.dataElement === "ypDUCAS6juy") || "";
       const session =
         dataValues.find((dv) => dv.dataElement === "n20LkH4ZBF8") || "";
       const date =
         dataValues.find((dv) => dv.dataElement === "RECl06RNilT") || "";
-      return `${code.value}${session.value}${date.value}`;
+      return { event, session: `${code.value}\\${session.value}\\${date.value}` };
     });
   const sessionDates = uniq(
     enrollment.events
-      .filter((e) => e.programStage === "VzkQBBglj3O")
+      .filter((e) => e.programStage === "VzkQBBglj3O" && e.deleted == false)
       .map(({ dataValues }) => {
         return (
           dataValues.find((dv) => dv.dataElement === "RECl06RNilT")?.value || ""
@@ -199,4 +201,15 @@ export function useInstance(instance) {
   return useQuery(["instance", instance], async () => {
     return fetchInstance(instance, engine);
   });
+}
+
+
+export async function deleteInstance(instance) {
+  const engine = useDataEngine();
+  const mutation = {
+    type: "delete",
+    resource: "trackedEntityInstances",
+    id: instance,
+  };
+  await engine.mutate(mutation)
 }

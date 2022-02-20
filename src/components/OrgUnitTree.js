@@ -5,7 +5,7 @@ import "antd/dist/antd.css";
 import { useStore } from "effector-react";
 import { flatten } from "lodash";
 import { $store } from "../models/Store";
-import { setUserOrgUnits, setSelectedOrgUnits } from "../models/Events";
+import { setUserOrgUnits, setSelectedOrgUnits, setCurrentUnit } from "../models/Events";
 
 const createQuery = (parent) => {
   return {
@@ -24,6 +24,10 @@ const createQuery = (parent) => {
 const OrgUnitTree = () => {
   const store = useStore($store);
   const engine = useDataEngine();
+  const onChange = (value) => {
+    setSelectedOrgUnits(value)
+    setCurrentUnit(value);
+  }
   const loadOrganisationUnitsChildren = async (parent) => {
     try {
       const {
@@ -66,10 +70,10 @@ const OrgUnitTree = () => {
           border: 0,
           width: 400,
         }}
-        value={store.selectedOrgUnits}
+        value={store.currentUnit}
         dropdownStyle={{ maxHeight: 400, overflow: "auto" }}
         placeholder="Please select Organisation Unit(s)"
-        onChange={(value) => setSelectedOrgUnits(value)}
+        onChange={onChange}
         loadData={loadOrganisationUnitsChildren}
         treeData={store.userOrgUnits}
       />

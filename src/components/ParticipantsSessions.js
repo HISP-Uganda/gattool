@@ -60,7 +60,38 @@ const ParticipantsSessions = ({ data, id }) => {
     setSessionDates([sessionDate, ...sessionDates]);
     onClose();
   };
-  const addParticipantSession = async (participant, session, item, add) => {
+
+  const findSession = (sessions, current) => {
+    return !!sessions.find((s) => s.session === current)
+  }
+
+  const findCurrentSession = (sessions, current) => {
+    const session = sessions.find((s) => s.session === current);
+
+    if (session) {
+      return session.event
+    }
+    return "˝"
+  }
+
+  async function deleteEvent(event) {
+    const mutation = {
+      type: "delete",
+      resource: "events",
+      id: event,
+    };
+    await engine.mutate(mutation)
+  }
+
+  const { mutateAsync: deleteAsync } = useMutation(deleteEvent, {
+    onSuccess: () => {
+      queryClient.invalidateQueries([
+        "instance", id,
+      ]);
+    },
+  });
+
+  const addParticipantSession = async (participant, session, item, add, currentEvent = "") => {
     if (add) {
       const event = {
         event: generateUid(),
@@ -76,6 +107,11 @@ const ParticipantsSessions = ({ data, id }) => {
         orgUnit: store.selectedOrgUnits,
       };
       await mutateAsync(event);
+    } else {
+      if (currentEvent) {
+        console.log(currentEvent)
+        await deleteAsync(currentEvent)
+      }
     }
   };
   return (
@@ -100,7 +136,8 @@ const ParticipantsSessions = ({ data, id }) => {
               <Table colorScheme="cyan" size="md" flex={1}>
                 <Thead>
                   <Tr>
-                    <Th>Participant</Th>
+                    <Th>Individual Code</Th>
+                    <Th>Individual Name</Th>
                     {data.sessions.map((session) => (
                       <Th key={session.id} minW="200px">
                         {session.name}
@@ -114,20 +151,20 @@ const ParticipantsSessions = ({ data, id }) => {
                     .map((participant) => (
                       <Tr key={participant.event}>
                         <Td>{participant.ypDUCAS6juy}</Td>
+                        <Td>{participant.vfHaBC1ONln}</Td>
                         {data.sessions.map((session) => (
                           <Td key={session.id}>
                             <Checkbox
                               isChecked={
-                                data.doneSessions.indexOf(
-                                  `${participant.ypDUCAS6juy}${session.code}${item}`
-                                ) !== -1
+                                findSession(data.doneSessions, `${participant.ypDUCAS6juy}\\${session.code}\\${item}`)
                               }
                               onChange={(e) =>
                                 addParticipantSession(
                                   participant.ypDUCAS6juy,
                                   session.code,
                                   item,
-                                  e.target.checked
+                                  e.target.checked,
+                                  findCurrentSession(data.doneSessions, `${participant.ypDUCAS6juy}\\${session.code}\\${item}`)
                                 )
                               }
                             />

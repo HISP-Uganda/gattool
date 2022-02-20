@@ -8,3 +8,4 @@ export const setProgramTrackedEntityAttributes = domain.createEvent(); //OSX Add
 export const setSelectedActivity = domain.createEvent();
 export const setProgramStages = domain.createEvent();
 export const setActive = domain.createEvent();
+export const setCurrentUnit = domain.createEvent();

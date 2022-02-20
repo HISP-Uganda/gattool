@@ -24,7 +24,7 @@ import {
   Spacer,
 } from "@chakra-ui/react";
 import { useDataEngine } from "@dhis2/app-runtime";
-import { format } from "date-fns";
+import { format, differenceInYears, parseISO } from "date-fns";
 import { useStore } from "effector-react";
 import { useForm } from "react-hook-form";
 import { useMutation, useQueryClient } from "react-query";
@@ -35,6 +35,8 @@ import { useTrackerSearch } from "../models/Queries";
 const Participants = ({ data, id }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [query, setQuery] = useState("");
+  const [current, setCurrent] = useState("");
+  const [deleting, setDeleting] = useState(false);
   const store = useStore($store);
   const engine = useDataEngine();
   const queryClient = useQueryClient();
@@ -75,6 +77,39 @@ const Participants = ({ data, id }) => {
     setValue("ibKkBuv4gX1", "");
     onClose();
   };
+
+  async function deleteEvent(event) {
+    const mutation = {
+      type: "delete",
+      resource: "events",
+      id: event,
+    };
+    await engine.mutate(mutation)
+  }
+
+  const { mutateAsync: deleteAsync } = useMutation(deleteEvent);
+
+  const deleteEvents = async (events) => {
+    setDeleting(true)
+    const deletes = events.map((e) => deleteAsync(e));
+    await Promise.all(deletes);
+    queryClient.invalidateQueries([
+      "instance", id
+    ]);
+    setDeleting(false)
+  }
+
+  const deleteParticipants = async (participant) => {
+    setCurrent(participant.event)
+    setDeleting(true)
+    const sessions = data.doneSessions.filter(({ session }) => {
+      const splitSessions = String(session).split("\\");
+      return participant.ypDUCAS6juy === splitSessions[0]
+    }).map(({ event }) => event);
+    await deleteEvents([...sessions, participant.event]);
+    setDeleting(false);
+  }
+
 
   async function onSubmit(values) {
     try {
@@ -143,7 +178,7 @@ const Participants = ({ data, id }) => {
     setValue("ypDUCAS6juy", row["HLKc2AKR9jW"]);
     setValue("vfHaBC1ONln", row["huFucxA3e5c"]);
     setValue("ZUKC6mck81A", row["CfpoFtRmK1z"]);
-    setValue("eXWM3v3oIKu", row["N1nMqKtYKvI"]);
+    setValue("eXWM3v3oIKu", differenceInYears(new Date(), parseISO(row["N1nMqKtYKvI"])));
     onClose();
   };
   return (
@@ -215,9 +250,8 @@ const Participants = ({ data, id }) => {
                       <Button size="xs" onClick={() => edit(participant)}>
                         Edit
                       </Button>
-
                       <Spacer />
-                      <Button variant="outline" borderColor="red.400" size="xs" marginRight="20px" >
+                      <Button isLoading={deleting && current === participant.event} variant="outline" borderColor="red.400" size="xs" marginRight="20px" onClick={() => deleteParticipants(participant)}>
                         Delete Activity
                       </Button></>
 
