@@ -1,11 +1,17 @@
 import { Stack, Text } from "@chakra-ui/react";
 import { useDataEngine } from "@dhis2/app-runtime";
-import { TreeSelect } from "antd";
+import { TreeSelect, Select } from "antd";
 import "antd/dist/antd.css";
 import { useStore } from "effector-react";
 import { flatten } from "lodash";
 import { $store } from "../models/Store";
-import { setUserOrgUnits, setSelectedOrgUnits, setCurrentUnit } from "../models/Events";
+import {
+  setUserOrgUnits,
+  setSelectedOrgUnits,
+  setCurrentUnit,
+} from "../models/Events";
+
+const { Option } = Select;
 
 const createQuery = (parent) => {
   return {
@@ -25,9 +31,9 @@ const OrgUnitTree = () => {
   const store = useStore($store);
   const engine = useDataEngine();
   const onChange = (value) => {
-    setSelectedOrgUnits(value)
+    setSelectedOrgUnits(value);
     setCurrentUnit(value);
-  }
+  };
   const loadOrganisationUnitsChildren = async (parent) => {
     try {
       const {
@@ -80,5 +86,15 @@ const OrgUnitTree = () => {
     </Stack>
   );
 };
+
+export const SelectField = ({ options, others }) => (
+  <Select {...others} style={{ width: "100%" }}>
+    {options.map((o) => (
+      <Option key={o.id} value={o.code}>
+        {o.name}
+      </Option>
+    ))}
+  </Select>
+);
 
 export default OrgUnitTree;

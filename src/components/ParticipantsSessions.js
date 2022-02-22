@@ -25,7 +25,7 @@ import {
   Th,
   Thead,
   Tr,
-  useDisclosure
+  useDisclosure,
 } from "@chakra-ui/react";
 import { useDataEngine } from "@dhis2/app-runtime";
 import { useStore } from "effector-react";
@@ -38,6 +38,7 @@ const ParticipantsSessions = ({ data, id }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [sessionDates, setSessionDates] = useState(data.sessionDates);
   const [sessionDate, setSessionDate] = useState("");
+  const [currentSession, setCurrentSession] = useState("");
   const engine = useDataEngine();
   const queryClient = useQueryClient();
   const store = useStore($store);
@@ -62,17 +63,17 @@ const ParticipantsSessions = ({ data, id }) => {
   };
 
   const findSession = (sessions, current) => {
-    return !!sessions.find((s) => s.session === current)
-  }
+    return !!sessions.find((s) => s.session === current);
+  };
 
   const findCurrentSession = (sessions, current) => {
     const session = sessions.find((s) => s.session === current);
 
     if (session) {
-      return session.event
+      return session.event;
     }
-    return "˝"
-  }
+    return "";
+  };
 
   async function deleteEvent(event) {
     const mutation = {
@@ -80,18 +81,22 @@ const ParticipantsSessions = ({ data, id }) => {
       resource: "events",
       id: event,
     };
-    await engine.mutate(mutation)
+    await engine.mutate(mutation);
   }
 
   const { mutateAsync: deleteAsync } = useMutation(deleteEvent, {
     onSuccess: () => {
-      queryClient.invalidateQueries([
-        "instance", id,
-      ]);
+      queryClient.invalidateQueries(["instance", id]);
     },
   });
 
-  const addParticipantSession = async (participant, session, item, add, currentEvent = "") => {
+  const addParticipantSession = async (
+    participant,
+    session,
+    item,
+    add,
+    currentEvent = ""
+  ) => {
     if (add) {
       const event = {
         event: generateUid(),
@@ -109,8 +114,7 @@ const ParticipantsSessions = ({ data, id }) => {
       await mutateAsync(event);
     } else {
       if (currentEvent) {
-        console.log(currentEvent)
-        await deleteAsync(currentEvent)
+        await deleteAsync(currentEvent);
       }
     }
   };
@@ -121,6 +125,7 @@ const ParticipantsSessions = ({ data, id }) => {
           <Text>+ Add Sessions</Text>
         </Button>
       </Box>
+
       <Accordion>
         {sessionDates.map((item) => (
           <AccordionItem key={item}>
@@ -132,48 +137,68 @@ const ParticipantsSessions = ({ data, id }) => {
                 <AccordionIcon />
               </AccordionButton>
             </h2>
-            <AccordionPanel>
-              <Table colorScheme="cyan" size="md" flex={1}>
-                <Thead>
-                  <Tr>
-                    <Th>Individual Code</Th>
-                    <Th>Individual Name</Th>
-                    {data.sessions.map((session) => (
-                      <Th key={session.id} minW="200px">
-                        {session.name}
-                      </Th>
-                    ))}
-                  </Tr>
-                </Thead>
-                <Tbody>
-                  {data.participants
-                    .filter(({ eventDate }) => !!eventDate)
-                    .map((participant) => (
-                      <Tr key={participant.event}>
-                        <Td>{participant.ypDUCAS6juy}</Td>
-                        <Td>{participant.vfHaBC1ONln}</Td>
-                        {data.sessions.map((session) => (
-                          <Td key={session.id}>
-                            <Checkbox
-                              isChecked={
-                                findSession(data.doneSessions, `${participant.ypDUCAS6juy}\\${session.code}\\${item}`)
-                              }
-                              onChange={(e) =>
-                                addParticipantSession(
-                                  participant.ypDUCAS6juy,
-                                  session.code,
-                                  item,
-                                  e.target.checked,
-                                  findCurrentSession(data.doneSessions, `${participant.ypDUCAS6juy}\\${session.code}\\${item}`)
-                                )
-                              }
-                            />
-                          </Td>
-                        ))}
-                      </Tr>
-                    ))}
-                </Tbody>
-              </Table>
+            <AccordionPanel w="100%" overflow="auto">
+              <Accordion>
+                {Object.entries(data.sessions).map(([s, optionSet]) => (
+                  <AccordionItem key={s}>
+                    <h2>
+                      <AccordionButton>
+                        <Box flex="1" textAlign="left">
+                          {s}
+                        </Box>
+                        <AccordionIcon />
+                      </AccordionButton>
+                    </h2>
+                    <AccordionPanel>
+                      <Table colorScheme="cyan" size="md" flex={1}>
+                        <Thead>
+                          <Tr>
+                            <Th>Individual Code</Th>
+                            <Th>Individual Name</Th>
+                            {optionSet.options.map((session) => (
+                              <Th key={session.id} minW="200px">
+                                {session.name}
+                              </Th>
+                            ))}
+                          </Tr>
+                        </Thead>
+                        <Tbody>
+                          {data.participants
+                            .filter(({ eventDate }) => !!eventDate)
+                            .map((participant) => (
+                              <Tr key={participant.event}>
+                                <Td>{participant.ypDUCAS6juy}</Td>
+                                <Td>{participant.vfHaBC1ONln}</Td>
+                                {optionSet.options.map((session) => (
+                                  <Td key={session.id}>
+                                    <Checkbox
+                                      isChecked={findSession(
+                                        data.doneSessions,
+                                        `${participant.ypDUCAS6juy}\\${session.code}\\${item}`
+                                      )}
+                                      onChange={(e) =>
+                                        addParticipantSession(
+                                          participant.ypDUCAS6juy,
+                                          session.code,
+                                          item,
+                                          e.target.checked,
+                                          findCurrentSession(
+                                            data.doneSessions,
+                                            `${participant.ypDUCAS6juy}\\${session.code}\\${item}`
+                                          )
+                                        )
+                                      }
+                                    />
+                                  </Td>
+                                ))}
+                              </Tr>
+                            ))}
+                        </Tbody>
+                      </Table>
+                    </AccordionPanel>
+                  </AccordionItem>
+                ))}
+              </Accordion>
             </AccordionPanel>
           </AccordionItem>
         ))}

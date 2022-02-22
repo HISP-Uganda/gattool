@@ -60,7 +60,7 @@ export function useLoader(program) {
     });
     setProgramUnits(units.map((o) => o.id));
     setUserOrgUnits(processedUnits);
-    setCurrentUnit(organisationUnits[0].id)
+    setCurrentUnit(organisationUnits[0].id);
     setSelectedOrgUnits(organisationUnits[0].id);
     setProgramTrackedEntityAttributes(programTrackedEntityAttributes);
     setProgramStages(fromPairs(processed));
@@ -136,7 +136,9 @@ export const fetchInstance = async (id, engine) => {
     trackedEntityInstance: instance.trackedEntityInstance,
     sessions: [],
     attributes: fromPairs(
-      instance.attributes.map((a) => [a.attribute, a.value])
+      instance.attributes.map((a) => {
+        return [a.attribute, a.value];
+      })
     ),
   };
   const participants = enrollment.events
@@ -157,7 +159,10 @@ export const fetchInstance = async (id, engine) => {
         dataValues.find((dv) => dv.dataElement === "n20LkH4ZBF8") || "";
       const date =
         dataValues.find((dv) => dv.dataElement === "RECl06RNilT") || "";
-      return { event, session: `${code.value}\\${session.value}\\${date.value}` };
+      return {
+        event,
+        session: `${code.value}\\${session.value}\\${date.value}`,
+      };
     });
   const sessionDates = uniq(
     enrollment.events
@@ -179,19 +184,26 @@ export const fetchInstance = async (id, engine) => {
   const subGroup = instance.attributes.find(
     (a) => a.attribute === "mWyp85xIzXR"
   );
-  if (subGroup && sessions[subGroup.value]) {
-    const optionQuery = {
-      availableSessions: {
-        resource: `optionGroups/${sessions[subGroup.value]}.json`,
-        params: {
-          fields: "options[id,name,code]",
-        },
-      },
-    };
-    const {
-      availableSessions: { options },
-    } = await engine.query(optionQuery);
-    data = { ...data, sessions: options };
+
+  if (subGroup) {
+    const allGroups = String(subGroup.value).split(",");
+    const queries = allGroups.map((g) => {
+      if (sessions[g]) {
+        return [
+          g,
+          {
+            resource: `optionGroups/${sessions[g]}.json`,
+            params: {
+              fields: "options[id,name,code]",
+            },
+          },
+        ];
+      }
+      return [];
+    });
+
+    const availableSessions = await engine.query(fromPairs(queries));
+    data = { ...data, sessions: availableSessions };
   }
   return data;
 };
@@ -203,7 +215,6 @@ export function useInstance(instance) {
   });
 }
 
-
 export async function deleteInstance(instance) {
   const engine = useDataEngine();
   const mutation = {
@@ -211,5 +222,5 @@ export async function deleteInstance(instance) {
     resource: "trackedEntityInstances",
     id: instance,
   };
-  await engine.mutate(mutation)
+  await engine.mutate(mutation);
 }

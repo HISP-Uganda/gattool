@@ -11,13 +11,13 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  Select,
   Stack,
   Text,
 } from "@chakra-ui/react";
 import { useDataEngine } from "@dhis2/app-runtime";
 import { format } from "date-fns";
 import { useStore } from "effector-react";
+import { Select } from "chakra-react-select";
 import { useForm } from "react-hook-form";
 import { useMutation, useQueryClient } from "react-query";
 import { isEmpty } from "lodash";
@@ -101,7 +101,7 @@ const ActivityForm = ({
   onOpen,
   onClose,
   isOpen,
-  mode = 'NEW',
+  mode = "NEW",
   otherAttributes = {},
   defaultValues = {},
 }) => {
@@ -116,6 +116,7 @@ const ActivityForm = ({
     watch,
   } = useForm({ defaultValues });
   watch("bFnIjGJpf9t");
+  watch("mWyp85xIzXR");
   const store = useStore($store);
   const addTrackedEntityInstance = async (data) => {
     const mutation = {
@@ -221,7 +222,7 @@ const ActivityForm = ({
         variant="ghost"
         isDisabled={store.programUnits.indexOf(store.selectedOrgUnits) === -1}
       >
-        {mode === 'NEW' ? <Text>+ Add Group Activity</Text> : <Text>Edit</Text>}
+        {mode === "NEW" ? <Text>+ Add Group Activity</Text> : <Text>Edit</Text>}
       </Button>
 
       <Modal
@@ -240,8 +241,8 @@ const ActivityForm = ({
                 {store.programTrackedEntityAttributes.map((ptea) => {
                   const record = ptea.mandatory
                     ? register(ptea.trackedEntityAttribute.id, {
-                      required: "This is required",
-                    })
+                        required: "This is required",
+                      })
                     : register(ptea.trackedEntityAttribute.id);
                   return (
                     <FormControl
@@ -255,34 +256,66 @@ const ActivityForm = ({
                       {ptea.trackedEntityAttribute.optionSetValue ? (
                         ptea.trackedEntityAttribute.id === "mWyp85xIzXR" ? (
                           <Select
-                            placeholder="Select option"
-                            id={ptea.trackedEntityAttribute.id}
-                            {...record}
-                          >
-                            {getOptions().map((option) => {
-                              return (
-                                <option key={option.id} value={option.code}>
-                                  {option.name}
-                                </option>
-                              );
+                            isMulti
+                            options={getOptions().map((o) => {
+                              return {
+                                value: o.code,
+                                label: o.name,
+                              };
                             })}
-                          </Select>
+                            value={getOptions()
+                              .map((o) => {
+                                return {
+                                  value: o.code,
+                                  label: o.name,
+                                };
+                              })
+                              .filter((option) => {
+                                return (
+                                  String(
+                                    getValues(ptea.trackedEntityAttribute.id)
+                                  )
+                                    .split(",")
+                                    .indexOf(option.value) !== -1
+                                );
+                              })}
+                            onChange={(option) => {
+                              setValue(
+                                ptea.trackedEntityAttribute.id,
+                                option.map((o) => o.value).join(",")
+                              );
+                            }}
+                          />
                         ) : (
                           <Select
-                            placeholder="Select option"
-                            id={ptea.trackedEntityAttribute.id}
-                            {...record}
-                          >
-                            {ptea.trackedEntityAttribute.optionSet.options.map(
-                              (option) => {
-                                return (
-                                  <option key={option.id} value={option.code}>
-                                    {option.name}
-                                  </option>
-                                );
+                            options={ptea.trackedEntityAttribute.optionSet.options.map(
+                              (o) => {
+                                return {
+                                  value: o.code,
+                                  label: o.name,
+                                };
                               }
                             )}
-                          </Select>
+                            value={ptea.trackedEntityAttribute.optionSet.options
+                              .map((o) => {
+                                return {
+                                  value: o.code,
+                                  label: o.name,
+                                };
+                              })
+                              .find((option) => {
+                                return (
+                                  option.value ===
+                                  getValues(ptea.trackedEntityAttribute.id)
+                                );
+                              })}
+                            onChange={(option) => {
+                              setValue(
+                                ptea.trackedEntityAttribute.id,
+                                option.value
+                              );
+                            }}
+                          />
                         )
                       ) : (
                         <Input
