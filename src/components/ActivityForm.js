@@ -253,70 +253,68 @@ const ActivityForm = ({
                       <FormLabel htmlFor="email">
                         {ptea.trackedEntityAttribute.name}
                       </FormLabel>
-                      {ptea.trackedEntityAttribute.optionSetValue ? (
-                        ptea.trackedEntityAttribute.id === "mWyp85xIzXR" ? (
-                          <Select
-                            isMulti
-                            options={getOptions().map((o) => {
+                      {ptea.trackedEntityAttribute.id === "mWyp85xIzXR" ? (
+                        <Select
+                          isMulti
+                          options={getOptions().map((o) => {
+                            return {
+                              value: o.code,
+                              label: o.name,
+                            };
+                          })}
+                          value={getOptions()
+                            .map((o) => {
                               return {
                                 value: o.code,
                                 label: o.name,
                               };
-                            })}
-                            value={getOptions()
-                              .map((o) => {
-                                return {
-                                  value: o.code,
-                                  label: o.name,
-                                };
-                              })
-                              .filter((option) => {
-                                return (
-                                  String(
-                                    getValues(ptea.trackedEntityAttribute.id)
-                                  )
-                                    .split(",")
-                                    .indexOf(option.value) !== -1
-                                );
-                              })}
-                            onChange={(option) => {
-                              setValue(
-                                ptea.trackedEntityAttribute.id,
-                                option.map((o) => o.value).join(",")
-                              );
-                            }}
-                          />
-                        ) : (
-                          <Select
-                            options={ptea.trackedEntityAttribute.optionSet.options.map(
-                              (o) => {
-                                return {
-                                  value: o.code,
-                                  label: o.name,
-                                };
-                              }
-                            )}
-                            value={ptea.trackedEntityAttribute.optionSet.options
-                              .map((o) => {
-                                return {
-                                  value: o.code,
-                                  label: o.name,
-                                };
-                              })
-                              .find((option) => {
-                                return (
-                                  option.value ===
+                            })
+                            .filter((option) => {
+                              return (
+                                String(
                                   getValues(ptea.trackedEntityAttribute.id)
-                                );
-                              })}
-                            onChange={(option) => {
-                              setValue(
-                                ptea.trackedEntityAttribute.id,
-                                option.value
+                                )
+                                  .split(",")
+                                  .indexOf(option.value) !== -1
                               );
-                            }}
-                          />
-                        )
+                            })}
+                          onChange={(option) => {
+                            setValue(
+                              ptea.trackedEntityAttribute.id,
+                              option.map((o) => o.value).join(",")
+                            );
+                          }}
+                        />
+                      ) : ptea.trackedEntityAttribute.optionSetValue ? (
+                        <Select
+                          options={ptea.trackedEntityAttribute.optionSet.options.map(
+                            (o) => {
+                              return {
+                                value: o.code,
+                                label: o.name,
+                              };
+                            }
+                          )}
+                          value={ptea.trackedEntityAttribute.optionSet.options
+                            .map((o) => {
+                              return {
+                                value: o.code,
+                                label: o.name,
+                              };
+                            })
+                            .find((option) => {
+                              return (
+                                option.value ===
+                                getValues(ptea.trackedEntityAttribute.id)
+                              );
+                            })}
+                          onChange={(option) => {
+                            setValue(
+                              ptea.trackedEntityAttribute.id,
+                              option.value
+                            );
+                          }}
+                        />
                       ) : (
                         <Input
                           id={ptea.trackedEntityAttribute.id}
