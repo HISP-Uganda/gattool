@@ -150,51 +150,109 @@ const ParticipantsSessions = ({ data, id }) => {
                       </AccordionButton>
                     </h2>
                     <AccordionPanel>
-                      <Table colorScheme="cyan" size="md" flex={1}>
-                        <Thead>
-                          <Tr>
-                            <Th>Individual Code</Th>
-                            <Th>Individual Name</Th>
-                            {optionSet.options.map((session) => (
-                              <Th key={session.id} minW="200px">
-                                {session.name}
-                              </Th>
-                            ))}
-                          </Tr>
-                        </Thead>
-                        <Tbody>
-                          {data.participants
-                            .filter(({ eventDate }) => !!eventDate)
-                            .map((participant) => (
-                              <Tr key={participant.event}>
-                                <Td>{participant.ypDUCAS6juy}</Td>
-                                <Td>{participant.vfHaBC1ONln}</Td>
+                      <Box m="auto" w="100%">
+                        <Box
+                          position="relative"
+                          overflow="auto"
+                          whiteSpace="nowrap"
+                          h="500px"
+                        >
+                          <Table colorScheme="cyan" size="md" flex={1}>
+                            <Thead>
+                              <Tr>
+                                <Th
+                                  position="sticky"
+                                  backgroundColor="white"
+                                  w="200px"
+                                  minWidth="200px"
+                                  maxWidth="200px"
+                                  left="0px"
+                                  top="0px"
+                                  zIndex={10000}
+                                >
+                                  Individual Code
+                                </Th>
+                                <Th
+                                  position="sticky"
+                                  backgroundColor="white"
+                                  w="250px"
+                                  minW="250px"
+                                  maxWidth="250px"
+                                  left="200px"
+                                  top="0px"
+                                  zIndex={10000}
+                                >
+                                  Individual Name
+                                </Th>
                                 {optionSet.options.map((session) => (
-                                  <Td key={session.id}>
-                                    <Checkbox
-                                      isChecked={findSession(
-                                        data.doneSessions,
-                                        `${participant.ypDUCAS6juy}\\${session.code}\\${item}`
-                                      )}
-                                      onChange={(e) =>
-                                        addParticipantSession(
-                                          participant.ypDUCAS6juy,
-                                          session.code,
-                                          item,
-                                          e.target.checked,
-                                          findCurrentSession(
-                                            data.doneSessions,
-                                            `${participant.ypDUCAS6juy}\\${session.code}\\${item}`
-                                          )
-                                        )
-                                      }
-                                    />
-                                  </Td>
+                                  <Th
+                                    key={session.id}
+                                    top="0px"
+                                    position="sticky"
+                                    backgroundColor="white"
+                                    textAlign="center"
+                                    zIndex={1000}
+                                  >
+                                    {session.name}
+                                  </Th>
                                 ))}
                               </Tr>
-                            ))}
-                        </Tbody>
-                      </Table>
+                            </Thead>
+                            <Tbody>
+                              {data.participants
+                                .filter(({ eventDate }) => !!eventDate)
+                                .map((participant) => (
+                                  <Tr key={participant.event}>
+                                    <Th
+                                      position="sticky"
+                                      w="200px"
+                                      minWidth="200px"
+                                      maxWidth="200px"
+                                      left="0px"
+                                      backgroundColor="white"
+                                      zIndex={100}
+                                    >
+                                      {participant.ypDUCAS6juy}
+                                    </Th>
+                                    <Th
+                                      position="sticky"
+                                      w="250px"
+                                      minW="250px"
+                                      maxWidth="250px"
+                                      left="200px"
+                                      backgroundColor="white"
+                                      zIndex={100}
+                                    >
+                                      {participant.vfHaBC1ONln}
+                                    </Th>
+                                    {optionSet.options.map((session) => (
+                                      <Td key={session.id} textAlign="center">
+                                        <Checkbox
+                                          isChecked={findSession(
+                                            data.doneSessions,
+                                            `${participant.ypDUCAS6juy}\\${session.code}\\${item}`
+                                          )}
+                                          onChange={(e) =>
+                                            addParticipantSession(
+                                              participant.ypDUCAS6juy,
+                                              session.code,
+                                              item,
+                                              e.target.checked,
+                                              findCurrentSession(
+                                                data.doneSessions,
+                                                `${participant.ypDUCAS6juy}\\${session.code}\\${item}`
+                                              )
+                                            )
+                                          }
+                                        />
+                                      </Td>
+                                    ))}
+                                  </Tr>
+                                ))}
+                            </Tbody>
+                          </Table>
+                        </Box>
+                      </Box>
                     </AccordionPanel>
                   </AccordionItem>
                 ))}
