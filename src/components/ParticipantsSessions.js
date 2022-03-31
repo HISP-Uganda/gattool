@@ -31,6 +31,7 @@ import { useDataEngine } from "@dhis2/app-runtime";
 import { useStore } from "effector-react";
 import { useState } from "react";
 import { useMutation, useQueryClient } from "react-query";
+import { orderBy } from "lodash";
 import { $store } from "../models/Store";
 import { generateUid } from "../models/uid";
 
@@ -38,7 +39,6 @@ const ParticipantsSessions = ({ data, id }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [sessionDates, setSessionDates] = useState(data.sessionDates);
   const [sessionDate, setSessionDate] = useState("");
-  const [currentSession, setCurrentSession] = useState("");
   const engine = useDataEngine();
   const queryClient = useQueryClient();
   const store = useStore($store);
@@ -184,18 +184,20 @@ const ParticipantsSessions = ({ data, id }) => {
                                 >
                                   Individual Name
                                 </Th>
-                                {optionSet.options.map((session) => (
-                                  <Th
-                                    key={session.id}
-                                    top="0px"
-                                    position="sticky"
-                                    backgroundColor="white"
-                                    textAlign="center"
-                                    zIndex={1000}
-                                  >
-                                    {session.name}
-                                  </Th>
-                                ))}
+                                {orderBy(optionSet.options, ["name"]).map(
+                                  (session) => (
+                                    <Th
+                                      key={session.id}
+                                      top="0px"
+                                      position="sticky"
+                                      backgroundColor="white"
+                                      textAlign="center"
+                                      zIndex={1000}
+                                    >
+                                      {session.name}
+                                    </Th>
+                                  )
+                                )}
                               </Tr>
                             </Thead>
                             <Tbody>

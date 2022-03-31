@@ -1,6 +1,7 @@
 export const sessions = {
   "VSLA Methodology": "XQ3eQax0uIk",
   "VSLA TOT": "qEium1Lrsc0",
+  "VSLA Saving and Borrowing": "ZOAmd05j2t9",
   "Financial Literacy": "LUR9gZUkcrr",
   "SPM Training": "EYMKGdEeniO",
   "Bank Linkages": "gmEcQwHbivM",
@@ -8,6 +9,7 @@ export const sessions = {
   "MOE Journeys Plus": "HkuYbbefaEM",
   "MOH Journeys curriculum": "P4tTIlhX1yB",
   "No means No sessions (Boys)": "WuPXlmvSfVJ",
+  "No means No sessions (Boys) New Curriculum": "TIObJloCVdC",
   "No means No sessions (Girls)": "okgcyLQNVFe",
   ECD: "QHaULS891IF",
 };

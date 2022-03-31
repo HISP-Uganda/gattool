@@ -50,6 +50,11 @@ const rules = {
       name: "Bank Linkages",
       id: "sUWKmNl1LWz",
     },
+    {
+      code: "VSLA Saving and Borrowing",
+      name: "VSLA Saving and Borrowing",
+      id: "ZOAmd05j2t9",
+    },
   ],
   "2. Sinovuyo": [
     {
@@ -85,6 +90,11 @@ const rules = {
       code: "No means No sessions (Girls)",
       name: "No means No sessions (Girls)",
       id: "QV3TyZXPWgv",
+    },
+    {
+      code: "No means No sessions (Boys) New Curriculum",
+      name: "No means No sessions (Boys) New Curriculum",
+      id: "b8U0SohW8Qv",
     },
   ],
   "7. Early Childhood Development (ECD)": [
