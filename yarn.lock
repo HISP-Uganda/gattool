@@ -2,6 +2,13 @@
 # yarn lockfile v1
 
 
+"@ajna/pagination@1.4.13":
+  version "1.4.13"
+  resolved "https://registry.yarnpkg.com/@ajna/pagination/-/pagination-1.4.13.tgz#47d99eebd779a4a23aca714a297e3ae3cd6ed484"
+  integrity sha512-sEG1oIT8aYevMc2YJ1grihKb/PHykWAby/oVt1aUZntQwAQishyhdyPOAmRbx58KQS+nkqXRmPLp2CYi0FMJgA==
+  dependencies:
+    lodash.union "^4.6.0"
+
 "@ampproject/remapping@^2.0.0":
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/@ampproject/remapping/-/remapping-2.1.0.tgz#72becdf17ee44b2d1ac5651fb12f1952c336fe23"
@@ -17000,10 +17007,8 @@ watchpack@^1.7.4:
   resolved "https://registry.yarnpkg.com/watchpack/-/watchpack-1.7.5.tgz#1267e6c55e0b9b5be44c2023aed5437a2c26c453"
   integrity sha512-9P3MWk6SrKjHsGkLT2KHXdQ/9SNkyoJbabxnKOoJepsvJjJG8uYTR3yTPxPQvNDI3w4Nz1xnE0TLHK4RIVe/MQ==
   dependencies:
-    chokidar "^3.4.1"
     graceful-fs "^4.1.2"
     neo-async "^2.5.0"
-    watchpack-chokidar2 "^2.0.1"
   optionalDependencies:
     chokidar "^3.4.1"
     watchpack-chokidar2 "^2.0.1"

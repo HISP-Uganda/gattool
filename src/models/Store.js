@@ -9,6 +9,7 @@ import {
   setProgramStages,
   setActive,
   setCurrentUnit,
+  changeTotalInstances,
 } from "./Events";
 
 export const $store = domain
@@ -22,6 +23,7 @@ export const $store = domain
     programStages: {},
     selectedActivity: "",
     total: 0,
+    totalInstances: 0,
     active: "",
   })
   .on(setUserOrgUnits, (state, userOrgUnits) => {
@@ -36,6 +38,9 @@ export const $store = domain
   .on(changeTotal, (state, selectedProgram) => {
     return { ...state, selectedProgram };
   })
+  .on(changeTotalInstances, (state, totalInstances) => {
+    return { ...state, totalInstances };
+  })
   .on(setSelectedActivity, (state, selectedActivity) => {
     return { ...state, selectedActivity };
   })
@@ -47,12 +52,10 @@ export const $store = domain
     (state, programTrackedEntityAttributes) => {
       return { ...state, programTrackedEntityAttributes };
     }
-  ).on(
-    setCurrentUnit,
-    (state, currentUnit) => {
-      return { ...state, currentUnit };
-    }
   )
+  .on(setCurrentUnit, (state, currentUnit) => {
+    return { ...state, currentUnit };
+  })
   .on(setProgramStages, (state, programStages) => {
     return { ...state, programStages };
   })

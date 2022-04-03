@@ -16,7 +16,20 @@ import {
   Thead,
   Tr,
   useDisclosure,
+  Center,
+  Select,
 } from "@chakra-ui/react";
+import { useState } from "react";
+import {
+  Pagination,
+  PaginationContainer,
+  PaginationNext,
+  PaginationPage,
+  PaginationPageGroup,
+  PaginationPrevious,
+  PaginationSeparator,
+  usePagination,
+} from "@ajna/pagination";
 import Search16 from "@dhis2/ui-icons/build/cjs/react/Search16";
 import { useStore } from "effector-react";
 import { useNavigate } from "react-location";
@@ -90,11 +103,46 @@ const GATApp = () => {
   const store = useStore($store);
   const navigate = useNavigate();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const [q, setQ] = useState("");
+  const [query, setQuery] = useState("");
+
+  const {
+    pages,
+    pagesCount,
+    currentPage,
+    setCurrentPage,
+    isDisabled,
+    pageSize,
+    setPageSize,
+  } = usePagination({
+    total: store.totalInstances,
+    limits: {
+      outer: 4,
+      inner: 4,
+    },
+    initialState: {
+      pageSize: 20,
+      currentPage: 1,
+    },
+  });
 
   const { isLoading, isSuccess, isError, error, data } = useTracker(
     store.currentUnit,
-    store.selectedProgram
+    store.selectedProgram,
+    currentPage,
+    pageSize,
+    query
   );
+
+  const handlePageChange = (nextPage) => {
+    setCurrentPage(nextPage);
+  };
+
+  const handlePageSizeChange = (event) => {
+    const pageSize = Number(event.target.value);
+    setPageSize(pageSize);
+    setCurrentPage(1);
+  };
 
   return (
     <Stack>
@@ -109,14 +157,25 @@ const GATApp = () => {
         <Stack direction="row" alignItems="center">
           <OrgUnitTree />
           <InputGroup w="30%">
-            <Input placeholder="Type to search Group Activities" size="sm" />
+            <Input
+              placeholder="Type to search Group Activities"
+              size="sm"
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              onKeyPress={(e) => e.key === "Enter" && setQuery(q)}
+            />
             <InputRightElement children={<Search16 color="green.500" />} />
           </InputGroup>
           <Spacer />
           {/* <Button colorScheme="teal" variant="ghost">
             Export to Excel
           </Button> */}
-          <ActivityForm onOpen={onOpen} onClose={onClose} isOpen={isOpen} defaultValues={{}} />
+          <ActivityForm
+            onOpen={onOpen}
+            onClose={onClose}
+            isOpen={isOpen}
+            defaultValues={{}}
+          />
         </Stack>
         <Box overflow="auto">
           <Table variant="striped" colorScheme="gray" size="sm">
@@ -166,6 +225,85 @@ const GATApp = () => {
             )}
           </Table>
         </Box>
+        <Pagination
+          pagesCount={pagesCount}
+          currentPage={currentPage}
+          isDisabled={isDisabled}
+          onPageChange={handlePageChange}
+        >
+          <PaginationContainer
+            align="center"
+            justify="space-between"
+            p={4}
+            w="full"
+          >
+            <PaginationPrevious
+              _hover={{
+                bg: "yellow.400",
+              }}
+              bg="yellow.300"
+            >
+              <Text>Previous</Text>
+            </PaginationPrevious>
+            <PaginationPageGroup
+              isInline
+              align="center"
+              separator={
+                <PaginationSeparator
+                  onClick={() => console.warn("I'm clicking the separator")}
+                  bg="blue.300"
+                  fontSize="sm"
+                  w={14}
+                  jumpSize={11}
+                />
+              }
+            >
+              {pages.map((page) => (
+                <PaginationPage
+                  w={14}
+                  bg="red.300"
+                  key={`pagination_page_${page}`}
+                  page={page}
+                  fontSize="sm"
+                  _hover={{
+                    bg: "green.300",
+                  }}
+                  _current={{
+                    bg: "green.300",
+                    fontSize: "sm",
+                    w: 14,
+                  }}
+                />
+              ))}
+            </PaginationPageGroup>
+            <PaginationNext
+              _hover={{
+                bg: "yellow.400",
+              }}
+              bg="yellow.300"
+            >
+              <Text>Next</Text>
+            </PaginationNext>
+          </PaginationContainer>
+        </Pagination>
+        <Center w="full">
+          <Text>Records per page</Text>
+          <Select
+            ml={3}
+            onChange={handlePageSizeChange}
+            w={40}
+            value={pageSize}
+          >
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="20">20</option>
+            <option value="25">25</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+            <option value="150">150</option>
+            <option value="200">200</option>
+          </Select>
+        </Center>
       </Stack>
     </Stack>
   );

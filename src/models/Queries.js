@@ -10,7 +10,8 @@ import {
   setProgramTrackedEntityAttributes,
   setProgramStages,
   setActive,
-  setCurrentUnit, //OSX Added
+  setCurrentUnit,
+  changeTotalInstances, //OSX Added
 } from "./Events";
 
 export function useLoader(program) {
@@ -68,28 +69,48 @@ export function useLoader(program) {
   });
 }
 
-export function useTracker(orgUnits, program) {
+export function useTracker(orgUnits, program, page, pageSize, q) {
   const engine = useDataEngine();
+  let params = {
+    ou: orgUnits,
+    program,
+    ouMode: "DESCENDANTS",
+    page,
+    pageSize,
+    totalPages: "true",
+  };
+
+  if (q) {
+    params = {
+      ...params,
+      attribute: `cYDK0qZSri9:LIKE:${q}`,
+    };
+  }
   const query = {
     instances: {
       resource: "trackedEntityInstances/query.json",
-      params: {
-        ou: orgUnits,
-        program,
-        ouMode: "DESCENDANTS",
-      },
+      params,
     },
   };
-  return useQuery(["instances", orgUnits, program], async () => {
-    const {
-      instances: { rows, headers },
-    } = await engine.query(query);
-
-    const allData = rows.map((row) => {
-      return fromPairs(headers.map((r, i) => [r.name, row[i]]));
-    });
-    return allData;
-  });
+  return useQuery(
+    ["instances", orgUnits, program, page, pageSize, query],
+    async () => {
+      const {
+        instances: {
+          rows,
+          headers,
+          metaData: {
+            pager: { total },
+          },
+        },
+      } = await engine.query(query);
+      changeTotalInstances(total);
+      const allData = rows.map((row) => {
+        return fromPairs(headers.map((r, i) => [r.name, row[i]]));
+      });
+      return allData;
+    }
+  );
 }
 
 export function useTrackerSearch(q) {
