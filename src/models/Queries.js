@@ -14,6 +14,17 @@ import {
   changeTotalInstances, //OSX Added
 } from "./Events";
 
+export const createDataValue = (dataValues, event) => {
+  const code = dataValues.find((dv) => dv.dataElement === "ypDUCAS6juy") || "";
+  const session =
+    dataValues.find((dv) => dv.dataElement === "n20LkH4ZBF8") || "";
+  const date = dataValues.find((dv) => dv.dataElement === "RECl06RNilT") || "";
+  return {
+    event,
+    session: `${code.value}\\${session.value}\\${date.value}`,
+  };
+};
+
 export function useLoader(program) {
   const engine = useDataEngine();
   const query = {
@@ -174,16 +185,7 @@ export const fetchInstance = async (id, engine) => {
   const doneSessions = enrollment.events
     .filter((e) => e.programStage === "VzkQBBglj3O" && e.deleted == false)
     .map(({ dataValues, event }) => {
-      const code =
-        dataValues.find((dv) => dv.dataElement === "ypDUCAS6juy") || "";
-      const session =
-        dataValues.find((dv) => dv.dataElement === "n20LkH4ZBF8") || "";
-      const date =
-        dataValues.find((dv) => dv.dataElement === "RECl06RNilT") || "";
-      return {
-        event,
-        session: `${code.value}\\${session.value}\\${date.value}`,
-      };
+      return createDataValue(dataValues, event);
     });
   const sessionDates = uniq(
     enrollment.events

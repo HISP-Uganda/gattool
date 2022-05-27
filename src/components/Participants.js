@@ -84,32 +84,31 @@ const Participants = ({ data, id }) => {
       resource: "events",
       id: event,
     };
-    await engine.mutate(mutation)
+    await engine.mutate(mutation);
   }
 
   const { mutateAsync: deleteAsync } = useMutation(deleteEvent);
 
   const deleteEvents = async (events) => {
-    setDeleting(true)
+    setDeleting(true);
     const deletes = events.map((e) => deleteAsync(e));
     await Promise.all(deletes);
-    queryClient.invalidateQueries([
-      "instance", id
-    ]);
-    setDeleting(false)
-  }
+    queryClient.invalidateQueries(["instance", id]);
+    setDeleting(false);
+  };
 
   const deleteParticipants = async (participant) => {
-    setCurrent(participant.event)
-    setDeleting(true)
-    const sessions = data.doneSessions.filter(({ session }) => {
-      const splitSessions = String(session).split("\\");
-      return participant.ypDUCAS6juy === splitSessions[0]
-    }).map(({ event }) => event);
+    setCurrent(participant.event);
+    setDeleting(true);
+    const sessions = data.doneSessions
+      .filter(({ session }) => {
+        const splitSessions = String(session).split("\\");
+        return participant.ypDUCAS6juy === splitSessions[0];
+      })
+      .map(({ event }) => event);
     await deleteEvents([...sessions, participant.event]);
     setDeleting(false);
-  }
-
+  };
 
   async function onSubmit(values) {
     try {
@@ -130,28 +129,51 @@ const Participants = ({ data, id }) => {
       console.log(error);
     }
   }
+  const getLatest = async (subCounty) => {
+    const query = {
+      code: {
+        resource: `dataStore/icyd/${subCounty}`,
+      },
+    };
+    try {
+      const { code } = await engine.query(query);
+      const mutation = {
+        type: "update",
+        resource: `dataStore/icyd`,
+        id: subCounty,
+        data: code + 1,
+      };
+      engine.mutate(mutation);
+      return code + 1;
+    } catch (error) {
+      const mutation = {
+        type: "create",
+        resource: `dataStore/icyd/${subCounty}`,
+        data: 1,
+      };
+      engine.mutate(mutation);
+      return 1;
+    }
+  };
   async function generateCode(beneficiary) {
     const parish = store.selectedOrgUnits;
     const {
       location: {
-        parent: { code },
+        parent: { code, id },
       },
     } = await engine.query({
       location: {
         resource: `organisationUnits/${parish}.json`,
         params: {
-          fields: "parent[code]",
+          fields: "parent[id,code]",
         },
       },
     });
-    const participantsWith = data.participants.filter(
-      ({ eventDate }) => !!eventDate
-    );
-
+    const value = await getLatest(id);
     const generated = [
       code,
       beneficiary === "Prevention" ? "PREV" : "IND",
-      String(participantsWith.length + 1).padStart(4, "0"),
+      String(value + 1).padStart(4, "0"),
     ].join("-");
     setValue("ypDUCAS6juy", generated);
     setValue("vfHaBC1ONln", "");
@@ -178,7 +200,10 @@ const Participants = ({ data, id }) => {
     setValue("ypDUCAS6juy", row["HLKc2AKR9jW"]);
     setValue("vfHaBC1ONln", row["huFucxA3e5c"]);
     setValue("ZUKC6mck81A", row["CfpoFtRmK1z"]);
-    setValue("eXWM3v3oIKu", differenceInYears(new Date(), parseISO(row["N1nMqKtYKvI"])));
+    setValue(
+      "eXWM3v3oIKu",
+      differenceInYears(new Date(), parseISO(row["N1nMqKtYKvI"]))
+    );
     onClose();
   };
   return (
@@ -199,8 +224,8 @@ const Participants = ({ data, id }) => {
                 {store.programStages["aTZwDRoJnxj"].map((a) => {
                   const record = a.compulsory
                     ? register(a.id, {
-                      required: "This is required",
-                    })
+                        required: "This is required",
+                      })
                     : register(a.id);
                   return (
                     <Td key={a.id}>
@@ -251,10 +276,17 @@ const Participants = ({ data, id }) => {
                         Edit
                       </Button>
                       <Spacer />
-                      <Button isLoading={deleting && current === participant.event} variant="outline" borderColor="red.400" size="xs" marginRight="20px" onClick={() => deleteParticipants(participant)}>
+                      <Button
+                        isLoading={deleting && current === participant.event}
+                        variant="outline"
+                        borderColor="red.400"
+                        size="xs"
+                        marginRight="20px"
+                        onClick={() => deleteParticipants(participant)}
+                      >
                         Delete Activity
-                      </Button></>
-
+                      </Button>
+                    </>
                   )}
                 </Td>
               </Tr>

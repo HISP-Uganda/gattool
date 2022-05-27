@@ -26,6 +26,7 @@ import {
   Thead,
   Tr,
   useDisclosure,
+  Spinner,
 } from "@chakra-ui/react";
 import { useDataEngine } from "@dhis2/app-runtime";
 import { useStore } from "effector-react";
@@ -34,11 +35,13 @@ import { useMutation, useQueryClient } from "react-query";
 import { orderBy } from "lodash";
 import { $store } from "../models/Store";
 import { generateUid } from "../models/uid";
+import { createDataValue } from "../models/Queries";
 
 const ParticipantsSessions = ({ data, id }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [sessionDates, setSessionDates] = useState(data.sessionDates);
   const [sessionDate, setSessionDate] = useState("");
+  const [statuses, setStatuses] = useState({});
   const engine = useDataEngine();
   const queryClient = useQueryClient();
   const store = useStore($store);
@@ -53,8 +56,21 @@ const ParticipantsSessions = ({ data, id }) => {
   };
 
   const { mutateAsync } = useMutation(addEvent, {
-    onSuccess: () => {
-      queryClient.invalidateQueries(["instance", id]);
+    onMutate: async (data) => {
+      await queryClient.cancelQueries(["instance", id]);
+      const previous = queryClient.getQueryData(["instance", id]);
+      console.log(data)
+      queryClient.setQueryData(["instance", id], (old) => {
+        const { doneSessions } = old;
+        return {
+          ...old,
+          doneSessions: [
+            ...doneSessions,
+            createDataValue(data.dataValues, data.event),
+          ],
+        };
+      });
+      return { previous };
     },
   });
   const addSession = () => {
@@ -85,8 +101,17 @@ const ParticipantsSessions = ({ data, id }) => {
   }
 
   const { mutateAsync: deleteAsync } = useMutation(deleteEvent, {
-    onSuccess: () => {
-      queryClient.invalidateQueries(["instance", id]);
+    onMutate: async (data) => {
+      await queryClient.cancelQueries(["instance", id]);
+      const previous = queryClient.getQueryData(["instance", id]);
+      queryClient.setQueryData(["instance", id], (old) => {
+        const { doneSessions } = old;
+        return {
+          ...old,
+          doneSessions: doneSessions.filter((ds) => ds.event !== data),
+        };
+      });
+      return { previous };
     },
   });
 
@@ -97,6 +122,7 @@ const ParticipantsSessions = ({ data, id }) => {
     add,
     currentEvent = ""
   ) => {
+    setStatuses({ ...statuses, [`${participant}${session}`]: true });
     if (add) {
       const event = {
         event: generateUid(),
@@ -112,9 +138,13 @@ const ParticipantsSessions = ({ data, id }) => {
         orgUnit: store.selectedOrgUnits,
       };
       await mutateAsync(event);
+      const { [`${participant}${session}`]: removed, ...others } = statuses;
+      setStatuses(others);
     } else {
       if (currentEvent) {
         await deleteAsync(currentEvent);
+        const { [`${participant}${session}`]: removed, ...others } = statuses;
+        setStatuses(others);
       }
     }
   };
@@ -227,28 +257,36 @@ const ParticipantsSessions = ({ data, id }) => {
                                     >
                                       {participant.vfHaBC1ONln}
                                     </Th>
-                                    {optionSet.options.map((session) => (
-                                      <Td key={session.id} textAlign="center">
-                                        <Checkbox
-                                          isChecked={findSession(
-                                            data.doneSessions,
-                                            `${participant.ypDUCAS6juy}\\${session.code}\\${item}`
-                                          )}
-                                          onChange={(e) =>
-                                            addParticipantSession(
-                                              participant.ypDUCAS6juy,
-                                              session.code,
-                                              item,
-                                              e.target.checked,
-                                              findCurrentSession(
+                                    {orderBy(optionSet.options, ["name"]).map(
+                                      (session) => (
+                                        <Td key={session.id} textAlign="center">
+                                          {!!statuses[
+                                            `${participant.ypDUCAS6juy}${session.code}`
+                                          ] ? (
+                                            <Spinner />
+                                          ) : (
+                                            <Checkbox
+                                              isChecked={findSession(
                                                 data.doneSessions,
                                                 `${participant.ypDUCAS6juy}\\${session.code}\\${item}`
-                                              )
-                                            )
-                                          }
-                                        />
-                                      </Td>
-                                    ))}
+                                              )}
+                                              onChange={(e) =>
+                                                addParticipantSession(
+                                                  participant.ypDUCAS6juy,
+                                                  session.code,
+                                                  item,
+                                                  e.target.checked,
+                                                  findCurrentSession(
+                                                    data.doneSessions,
+                                                    `${participant.ypDUCAS6juy}\\${session.code}\\${item}`
+                                                  )
+                                                )
+                                              }
+                                            />
+                                          )}
+                                        </Td>
+                                      )
+                                    )}
                                   </Tr>
                                 ))}
                             </Tbody>
